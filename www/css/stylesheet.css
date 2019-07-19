@@ -1,0 +1,77 @@
+
+
+@font-face {
+    font-family: 'musicnetregular';
+    src: url('/font/musicnet-webfont.woff2') format('woff2'),
+         url('/font/musicnet-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+body {
+    font-family: 'musicnetregular';
+    /* font-size: 80px; */
+    font-size: 11.5vw;
+    color: red;
+    background: black;
+
+    width: 100%; 
+    height: 100%;
+}
+
+.content {
+    /* animation:1s blinker linear infinite;
+    -webkit-animation:1s blinker linear infinite;
+    -moz-animation:1s blinker linear infinite; */
+    color: red;
+    width: 100%; 
+    height: 100%;
+    position: absolute; 
+    top: 0; 
+    left: 0;
+    text-align: center;
+    vertical-align: center;
+    /* padding: 20px; */
+
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center; 
+}
+
+#textzone{
+    position: relative; 
+    top: 33%;
+}
+
+
+.touchme {
+    position: fixed;
+    font-size: 48px;
+    margin: 40px;
+    padding: 40px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    z-index: 1;
+    background: #fff;
+  }
+
+@-moz-keyframes blinker {  
+ 0% { opacity: 1.0; }
+ 50% { opacity: 0.0; }
+ 100% { opacity: 1.0; }
+ }
+
+@-webkit-keyframes blinker {  
+ 0% { opacity: 1.0; }
+ 50% { opacity: 0.0; }
+ 100% { opacity: 1.0; }
+ }
+
+@keyframes blinker {  
+ 0% { opacity: 1.0; }
+ 50% { opacity: 0.0; }
+ 100% { opacity: 1.0; }
+ }
