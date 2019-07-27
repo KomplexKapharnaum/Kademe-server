@@ -18,7 +18,7 @@ function showCorpus() {
             $('.content').css("background-image", "")
             $('#textzone').html("   ")
         }
-        else if (txt.startsWith('@')) { 
+        else if (txt.startsWith('@') || txt.startsWith('%')) { 
             $('.content').css("background-color", "black")
             $('.content').css("background-image", "url(/media/"+txt.substr(1)+")" )
             $('#textzone').html("   ")
@@ -31,9 +31,9 @@ function showCorpus() {
         }
     }
     else {
-        $('.blinktext').html(" ")
         $('.content').css("background-color", "black")
         $('.content').css("background-image", "")
+        $('#textzone').html(" ")
     }
 }
 
@@ -76,18 +76,28 @@ $(function() {
     }); 
     socket.on('mqtt', function(data){
 
-        if (data.topic == 'add' && !corpus.includes(data.payload))
-            corpus.push(data.payload);
-            
-        else if (data.topic == 'rm')
-            for( var i = 0; i < corpus.length; i++) if (corpus[i] === data.payload) corpus.splice(i, 1);
+        console.log(data)
 
-        else if (data.topic == 'clear')
+        if (data.topic == '/add' && !corpus.includes(data.payload)) {
+            corpus.push(data.payload);
+            console.log('payload', data.payload)
+        }
+
+        else if (data.topic == '/text') {
+            corpus = [data.payload];
+        }
+            
+        else if (data.topic == '/rm') {
+            for( var i = 0; i < corpus.length; i++) 
+                if (corpus[i] === data.payload) 
+                    corpus.splice(i, 1);
+        }
+
+        else if (data.topic == '/clear')
             corpus = []
 
         showCorpus()    
         console.log('corpus', corpus)
-        // console.log('mqtt: ', msg);
     });
 
     // ROTATION
