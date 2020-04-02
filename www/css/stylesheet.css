@@ -53,13 +53,14 @@ body {
     position: fixed;
     font-size: 48px;
     margin: 40px;
-    padding: 40px;
+    padding: 60px;
     bottom: 0;
     left: 0;
     right: 0;
     top: 0;
     z-index: 1;
-    background: #fff;
+    background: #222;
+    text-align: center;
   }
 
 @-moz-keyframes blinker {  

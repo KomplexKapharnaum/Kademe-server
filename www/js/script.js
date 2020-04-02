@@ -5,8 +5,12 @@ var noSleep = new NoSleep();
 var corpus = []
 var corpusSpeed = 0
 var corpusIndex = 0
+var clockCorpus = null
 
 function showCorpus() {
+    if (clockCorpus) clearTimeout(clockCorpus);
+    clockCorpus = null;
+    
     i = corpusIndex + 1
     if (i >= corpus.length) i = 0;
     corpusIndex = i
@@ -22,11 +26,12 @@ function showCorpus() {
             $('.content').css("background-color", "black")
             $('.content').css("background-image", "url(/media/"+txt.substr(1)+")" )
             $('#textzone').html("   ")
-            console.log("url(/media/"+txt.substr(1)+")")
+            // console.log("url(/media/"+txt.substr(1)+")")
         }
         else { 
             $('.content').css("background-color", "black")
             $('.content').css("background-image", "")
+            txt = txt.replace(/[^\x00-\x7F]/g, "");
             $('#textzone').html(txt)
         }
     }
@@ -35,6 +40,8 @@ function showCorpus() {
         $('.content').css("background-image", "")
         $('#textzone').html(" ")
     }
+    
+    clockCorpus = setTimeout(showCorpus, 300);
 }
 
  
@@ -85,6 +92,8 @@ $(function() {
 
         else if (data.topic == '/text') {
             corpus = [data.payload];
+            if (data.payload.toLowerCase() == "je t'aime $$$")
+                window.location.href = "https://www.facebook.com/beaucoupbeaucoupdamour/";
         }
             
         else if (data.topic == '/rm') {
@@ -93,9 +102,10 @@ $(function() {
                     corpus.splice(i, 1);
         }
 
-        else if (data.topic == '/clear')
-            corpus = []
+        else if (data.topic == '/clear') corpus = []
 
+        else if (data.topic == '/facebook') window.location.href = "https://www.facebook.com/beaucoupbeaucoupdamour/";
+        
         showCorpus()    
         console.log('corpus', corpus)
     });
