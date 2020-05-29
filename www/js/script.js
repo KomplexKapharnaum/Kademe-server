@@ -1,120 +1,173 @@
 
-// No Sleep
-var noSleep = new NoSleep();
-
-var corpus = []
-var corpusSpeed = 0
-var corpusIndex = 0
-var clockCorpus = null
-
-function showCorpus() {
-    if (clockCorpus) clearTimeout(clockCorpus);
-    clockCorpus = null;
-    
-    i = corpusIndex + 1
-    if (i >= corpus.length) i = 0;
-    corpusIndex = i
-
-    if (i < corpus.length)  {
-        var txt = corpus[i].split('§')[0]
-        if (txt.startsWith('#')) { 
-            $('.content').css("background-color", txt.trim())
-            $('.content').css("background-image", "")
-            $('#textzone').html("   ")
-        }
-        else if (txt.startsWith('@') || txt.startsWith('%')) { 
-            $('.content').css("background-color", "black")
-            $('.content').css("background-image", "url(/media/"+txt.substr(1)+")" )
-            $('#textzone').html("   ")
-            // console.log("url(/media/"+txt.substr(1)+")")
-        }
-        else { 
-            $('.content').css("background-color", "black")
-            $('.content').css("background-image", "")
-            txt = txt.replace(/[^\x00-\x7F]/g, "");
-            $('#textzone').html(txt)
-        }
-    }
-    else {
-        $('.content').css("background-color", "black")
-        $('.content').css("background-image", "")
-        $('#textzone').html(" ")
-    }
-    
-    clockCorpus = setTimeout(showCorpus, 300);
-}
-
- 
+var allowUnload = false
+var isElectron = navigator.userAgent.toLowerCase().indexOf('electron/') > -1
+var activePhase = 0
+var myName = Cookies.get('name')
 
 //
 //  Run
 //
 $(function() {
 
-    var dummyVideo = document.querySelector('#dummyVideo');
-    setInterval(()=>{
-        dummyVideo.play();
-        console.log('nosleep video');
-    }, 1000*5)
+    // Electron specific
+    //
+    if (isElectron) 
+    {
+        const { ipcRenderer } = require('electron')
+        const remote = require('electron').remote;
 
+        ipcRenderer.on('devmode', (event, arg) => {
+            console.log('devmode'); 
+            allowUnload = true
+            $('.controls').show()
+        })
 
-    // Redirect to facebook
-    $('.toFB').on('click touchstart', () => {
-        window.location.href = "https://www.facebook.com/beaucoupbeaucoupdamour/";
-    })
+        // Controls
+        $('#quit').on('click', ()=>{ console.log('quit'); ipcRenderer.sendSync('quit') })
+        $('#shutdown').on('click', ()=>{ ipcRenderer.sendSync('shutdown') })
+        $('#reload').on('click', ()=>{ 
+            console.log('reload'); 
+            ipcRenderer.sendSync('reload') 
+        })
+        $('#clear').on('click', ()=>{ 
+            console.log('clear'); 
+            Cookies.remove('name')
+            ipcRenderer.sendSync('reload') 
+        })
+    }
 
-    // Enable no sleep
-    $('.touchme').on('click touchend', () => {
-
-        dummyVideo.load();
-        dummyVideo.play();
-
-        $('.touchme').hide()
-        noSleep.enable();
-        document.body.requestFullscreen();
-        console.log('touched')
-    })
-
+    // Prevent Closing (Alt+F4)
+    //
+    window.onbeforeunload = (e) => { if (!allowUnload) e.returnValue = false; };
     
+    // Intro  (splash + name)
+    //
+    function intro() 
+    {
+        // Hide splash
+        //
+        $('.connecting').hide()
+
+        // Validate name
+        //
+        $('#nameok').on('click touchend', () => 
+        {
+            var newname = $('#namenem').val().trim()
+            if (newname != '') {
+                myName = newname
+                Cookies.set('name', myName)
+
+                // Fullscreen
+                //document.body.requestFullscreen();
+                window.addEventListener("orientationchange", function() {
+                    document.body.requestFullscreen();
+                }, false);
+                $('.namescreen').hide()
+                $('.namedisplay').html(myName)
+                $('.info').show()
+                $('.content').show()
+            }
+        })
+        $('#namenem').keyup(function(e){
+            if(e.keyCode == 13) $('#nameok').click()
+        });
+
+        // Name loaded from cookies
+        //
+        if (myName !== undefined) {
+            $('#namenem').val(myName)
+            $('#nameok').click()
+        }
+    }
+
     // SocketIO
+    //
     var socket = io();
-    socket.on('connect', function(socket){
+
+    socket.on('connect', (socket) => {
         console.log('connected')
+        setTimeout(intro, 500);
     }); 
-    socket.on('mqtt', function(data){
-
-        console.log(data)
-
-        if (data.topic == '/add' && !corpus.includes(data.payload)) {
-            corpus.push(data.payload);
-            console.log('payload', data.payload)
-        }
-
-        else if (data.topic == '/text') {
-            corpus = [data.payload];
-            if (data.payload.toLowerCase() == "je t'aime $$$")
-                window.location.href = "https://www.facebook.com/beaucoupbeaucoupdamour/";
-        }
-            
-        else if (data.topic == '/rm') {
-            for( var i = 0; i < corpus.length; i++) 
-                if (corpus[i] === data.payload) 
-                    corpus.splice(i, 1);
-        }
-
-        else if (data.topic == '/clear') corpus = []
-
-        else if (data.topic == '/facebook') window.location.href = "https://www.facebook.com/beaucoupbeaucoupdamour/";
-        
-        showCorpus()    
-        console.log('corpus', corpus)
-    });
-
-    // ROTATION
-    window.addEventListener("orientationchange", function() {
-        // Announce the new orientation number
-        document.body.requestFullscreen();
-    }, false);
     
+    socket.on('quit',       ()=>{ $('#quit').click() })
+    socket.on('shutdown',   ()=>{ $('#shutdown').click() })
+    socket.on('reload',     ()=>{ $('#reload').click() })
+
+    socket.on('phase', (data)=>{
+        console.log('phase', data)
+        activePhase = data
+
+        // TODO phase change
+    })
+
+    
+    // PLAYER
+    //
+    var streamId = "777187855142290250008016";
+    var streamId = "LiveApp";
+
+    function playVideo() {
+	   $("#remoteVideo").show();
+	   document.getElementById("remoteVideo").play().then(function(value){
+           //autoplay started
+		   $("#play_button").hide();
+       }).catch(function(error) {
+			$("#play_button").show();
+			console.log("User interaction needed to start playing");
+       });
+
+	}
+
+	var pc_config = null;
+    
+	var webRTCAdaptor = new WebRTCAdaptor({
+		websocket_url : "wss://kademe.kxkm.net:5443/WebRTCAppEE/websocket",
+		mediaConstraints : { video : false, audio : false },
+		peerconnection_config : pc_config,
+		sdp_constraints : { OfferToReceiveAudio : true, OfferToReceiveVideo : true },
+		remoteVideoId : "remoteVideo",
+		isPlayMode: true,
+		debug: true,
+		callback : function(info, description) {
+			if (info == "initialized") {
+				console.log("initialized");
+				webRTCAdaptor.getStreamInfo(streamId);
+			}
+			else if (info == "streamInformation") {
+				console.log("stream information");
+				webRTCAdaptor.play(streamId);
+			}
+			else if (info == "play_started") {
+				//joined the stream
+				console.log("play started");
+				$("#video_info").hide();
+				playVideo();
+			} else if (info == "play_finished") {
+				//leaved the stream
+				console.log("play finished");
+				//check that publish may start again
+				setTimeout(function(){
+					webRTCAdaptor.getStreamInfo(streamId);
+				}, 3000);
+			}
+			else if (info == "closed") {
+				console.log("Connection closed");
+				if (typeof description != "undefined") {
+					console.log("Connecton closed: " + JSON.stringify(description));
+				}
+			}
+		},
+		callbackError : function(error) {
+			//some of the possible errors, NotFoundError, SecurityError,PermissionDeniedError
+			console.log("error callback: " + JSON.stringify(error));
+			
+			if (error == "no_stream_exist") {
+				setTimeout(function(){
+					webRTCAdaptor.getStreamInfo(streamId);
+				}, 3000);
+			}
+			//alert(JSON.stringify(error));
+		}
+	});
 
 });

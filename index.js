@@ -1,30 +1,6 @@
-// bcb-server
+// kademe-server
 
-// var app = require('express')();
-// var http = require('http').createServer(app);
-// var io = require('socket.io')(http);
-
-// app.get('/', function(req, res){
-//   res.sendFile(__dirname + '/www/index.html');
-// });
-
-// io.on('connection', function(socket){
-//   console.log('a user connected');
-// });
-
-// http.listen(3000, function(){
-//   console.log('listening on *:3000');
-// });
-
-
-// var http = require('http');
-
-// http.createServer(function (req, res) {
-//   res.writeHead(200, {'Content-Type': 'text/plain'});
-//   res.end('Hello World\n');
-// }).listen(8080, 'localhost');
-
-// console.log('Server running at http://localhost:8080/');
+var activePhase = 0
 
 var path = require('path')
 var express = require('express')
@@ -45,15 +21,18 @@ app.get('/', function(req, res){
 
 io.on('connection', function(socket){
   console.log('a user connected');
+  socket.emit('phase', activePhase)
 
   socket.on('disconnect', function(){
     console.log('user disconnected');
   });
 
-  socket.on('mqtt', function(data){
-    console.log('mqtt', data);
-    io.emit('mqtt', data)
-  });
+  // relay cmd from Kontroler to all clients
+  socket.on('cmd', (data)=>{
+    console.log('cmd', data);
+    if (data.action == 'phase') activePhase = data.args // save activePhase
+    io.emit(data.action, data.args)
+  })
 
 });
 

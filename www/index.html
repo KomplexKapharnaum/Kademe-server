@@ -6,34 +6,61 @@
 		<meta name="viewport" content="width=device-width">
 		<meta name="viewport" content="initial-scale=1.0">
 
-		<title>Beaucoup Beaucoup</title> 
+		<title>Khole37</title> 
 
-		<link rel="stylesheet" type="text/css" href="/css/stylesheet.css?2" />
+		<link rel="stylesheet" type="text/css" href="/css/stylesheet.css" />
 		<link rel="icon" href="/res/favicon.ico" />
-		<link rel="manifest" href="/res/manifest.json">
 
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
-		<script src="/js/nosleep.min.js"></script>
-		<script src="/js/script.js?2"></script>
+		<!-- Electron compat: Insert this line above script imports  -->
+		<script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+
+		<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+		<script src="//cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+
+		<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+
+		<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+		<script src="/js/webrtc_adaptor.js"></script>
+		
+		<script src="/js/script.js"></script>
+		
+		<!-- Electron compat:  Insert this line after script imports -->
+		<script>if (window.module) module = window.module;</script>
 		
 	</head>
 
-	<body class="">
+	<body class="noselect">
 		
-		<video width="1" height="1" id="dummyVideo">
-			<source src="/res/sample.3gp" type="video/3gp">
-			<source src="/res/sample.mp4" type="video/mp4">
-		</video>
+		<div class="controls">
+			<button id="quit">quit</button>
+			<button id="shutdown">shutdown</button>
+			<button id="reload">reload</button>
+		</div>
 
-		<div class="touchme">Touch Me<br /><br /><br />Press Me</div>
+		<div class="connecting">
+			recherhe du serveur de spectacle...
+		</div>
+		
+		<div class="namescreen">
+			VOTRE NOM<br />
+			<input type="text" id="namenem" /><button id="nameok">ok</button>
+		</div>
 
 		<div class="content">
-			<div id="textzone">
-				Beaucoup<br />
-				Beaucoup
+			<div id="textzone"> LOST IN TRANSITION ENERGETIQUE </div>
+			<video id="remoteVideo" autoplay playsinline></video><br />
+			<button id="play_button" onclick="playVideo()" style="display:none;">Play</button>
+		</div>
+
+		<div class="info">
+			<div class="infotxt">
+				vous êtes <span class="namedisplay"></span>, merci de respecter les consignes, merci de vous sécuriser, merci de consigner les instructions, merci d'exister en toute sécurité, merci de nous remercier, 
+				vous êtes <span class="namedisplay"></span>, merci de respecter les consignes, merci de vous sécuriser, merci de consigner les instructions, merci d'exister en toute sécurité, merci de nous remercier
 			</div>
 		</div>
+
 	</body>
 
 	
