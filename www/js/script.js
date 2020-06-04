@@ -1,7 +1,7 @@
+var FULLSCREEN = true
 
 var allowUnload = false
 var isElectron = navigator.userAgent.toLowerCase().indexOf('electron/') > -1
-var activePhase = 0
 var myName = Cookies.get('name')
 
 //
@@ -14,97 +14,172 @@ $(function() {
     if (isElectron) 
     {
         const { ipcRenderer } = require('electron')
-        const remote = require('electron').remote;
 
         ipcRenderer.on('devmode', (event, arg) => {
-            console.log('devmode'); 
-            allowUnload = true
-            $('.controls').show()
-        })
-
-        // Controls
-        $('#quit').on('click', ()=>{ console.log('quit'); ipcRenderer.sendSync('quit') })
-        $('#shutdown').on('click', ()=>{ ipcRenderer.sendSync('shutdown') })
-        $('#reload').on('click', ()=>{ 
-            console.log('reload'); 
-            ipcRenderer.sendSync('reload') 
-        })
-        $('#clear').on('click', ()=>{ 
-            console.log('clear'); 
-            Cookies.remove('name')
-            ipcRenderer.sendSync('reload') 
+            console.log('devmode');
         })
     }
 
     // Prevent Closing (Alt+F4)
     //
-    window.onbeforeunload = (e) => { if (!allowUnload) e.returnValue = false; };
+    if (FULLSCREEN) window.onbeforeunload = (e) => { if (!allowUnload) e.returnValue = false; };
     
-    // Intro  (splash + name)
-    //
-    function intro() 
-    {
-        // Hide splash
-        //
-        $('.connecting').hide()
+    // Devmode
+    document.onkeyup = function(e) {
+       if (e.ctrlKey && e.altKey  && e.which == 75) $(".controls").show()
+    };
 
-        // Validate name
-        //
-        $('#nameok').on('click touchend', () => 
-        {
-            var newname = $('#namenem').val().trim()
-            if (newname != '') {
-                myName = newname
-                Cookies.set('name', myName)
 
-                // Fullscreen
-                //document.body.requestFullscreen();
-                window.addEventListener("orientationchange", function() {
-                    document.body.requestFullscreen();
-                }, false);
-                $('.namescreen').hide()
-                $('.namedisplay').html(myName)
-                $('.info').show()
-                $('.content').show()
-            }
-        })
-        $('#namenem').keyup(function(e){
-            if(e.keyCode == 13) $('#nameok').click()
-        });
+    function introduceMe() {
+        $('.namedisplay').html(myName)
+        socket.emit('iam', myName)  
 
-        // Name loaded from cookies
-        //
-        if (myName !== undefined) {
-            $('#namenem').val(myName)
-            $('#nameok').click()
+        // Fullscreen
+        if (FULLSCREEN) {
+            document.body.requestFullscreen();
+            window.addEventListener("orientationchange", function() {
+                document.body.requestFullscreen();
+            }, false);
         }
     }
+
+    var kontroller = {
+
+        // Name request
+        //
+        name: () => 
+        {   
+            // Show
+            $('.widget').hide()
+            $('.widget-name').show()
+
+            // Validate name
+            //
+            $('#nameok').unbind().on('click touchend', () => 
+            {
+                var newname = $('#namenem').val().trim()
+                if (newname != '') {
+                    myName = newname
+                    Cookies.set('name', myName)
+                    introduceMe()
+                }
+            })
+            $('#namenem').unbind().keyup(function(e){
+                if(e.keyCode == 13) $('#nameok').click()
+            });
+        },
+
+        // Intro
+        //
+        intro: () => 
+        {
+            // Show
+            $('.widget').hide()
+            $('.widget-intro').show()
+        },
+
+        // Live
+        //
+        live: () => 
+        {
+            // Show
+            $('.widget').hide()
+            $('.widget-live').show()
+        },
+
+        // Shutdown
+        //
+        shutdown: () =>
+        {
+            console.log('shutdown')
+            if (isElectron) ipcRenderer.sendSync('shutdown') 
+            
+            // fake shutdown
+            else {
+                // TODO !!!
+                setTimeout(kontroller['quit'], 5000)
+            }
+        },
+
+        // Quit
+        //
+        quit: () =>
+        {
+            console.log('quit')
+            allowUnload = true
+            if (isElectron) ipcRenderer.sendSync('quit') 
+
+            // browser quit
+            else  {
+                // TODO !!!
+                document.exitFullscreen();
+            }
+        },
+
+        // Reload
+        //
+        reload: () =>
+        {
+            console.log('reload')
+            allowUnload = true
+            if (isElectron) ipcRenderer.sendSync('reload') 
+            else location.reload()
+        },
+
+        // Clear
+        //
+        clear: () =>
+        {
+            console.log('clear')
+            Cookies.remove('name')
+            kontroller['reload']()
+        }
+
+
+    } 
+
 
     // SocketIO
     //
     var socket = io();
 
-    socket.on('connect', (socket) => {
+    socket.on('connect', () => {
         console.log('connected')
-        setTimeout(intro, 500);
+
+        // Name missing => goto name display
+        if (myName == undefined || myName == '') {
+            kontroller['name']()
+        }
+        // Name ok: declare to server
+        else introduceMe()
     }); 
     
-    socket.on('quit',       ()=>{ $('#quit').click() })
-    socket.on('shutdown',   ()=>{ $('#shutdown').click() })
-    socket.on('reload',     ()=>{ $('#reload').click() })
-
-    socket.on('phase', (data)=>{
-        console.log('phase', data)
-        activePhase = data
-
-        // TODO phase change
+    // Receive Cmd => call action
+    //
+    socket.on('cmd', (data) => {
+        console.log('cmd received: ', data)
+        if (data['action'] == 'phase') kontroller[data['arg']]()
+        else kontroller[data['action']](data['arg']);
     })
+
+    // Bind Controls BTNS -> Send cmd to server in order to broadcast
+    //
+    $(".ctrlBtn").on('click', function(event){
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+        
+        let cmd = {
+            'action':   $(this).data('action'),
+            'arg':      $(this).data('arg')
+        }
+        socket.emit('cmd', cmd)
+    });
 
     
     // PLAYER
     //
-    var streamId = "777187855142290250008016";
-    var streamId = "LiveApp";
+    var streamId = "724747693896597453572303";
+    // var streamId = "streamtest";
 
     function playVideo() {
 	   $("#remoteVideo").show();
@@ -121,7 +196,7 @@ $(function() {
 	var pc_config = null;
     
 	var webRTCAdaptor = new WebRTCAdaptor({
-		websocket_url : "wss://kademe.kxkm.net:5443/WebRTCAppEE/websocket",
+		websocket_url : "wss://kademe2.kxkm.net:5443/WebRTCAppEE/websocket",
 		mediaConstraints : { video : false, audio : false },
 		peerconnection_config : pc_config,
 		sdp_constraints : { OfferToReceiveAudio : true, OfferToReceiveVideo : true },

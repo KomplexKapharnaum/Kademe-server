@@ -34,27 +34,42 @@
 	<body class="noselect">
 		
 		<div class="controls">
-			<button id="quit">quit</button>
-			<button id="shutdown">shutdown</button>
-			<button id="reload">reload</button>
+			<button class='ctrlBtn' data-action="phase"	data-arg="intro" >intro</button>
+			<button class='ctrlBtn' data-action="phase"	data-arg="live"  >live</button>
+			<button class='ctrlBtn' data-action="phase"	data-arg="break" >break</button>
+			<button class='ctrlBtn' data-action="phase"	data-arg="prod"  >prod</button>
+			<button class='ctrlBtn' data-action="phase"	data-arg="end"   >end</button>
+
+			<button class='ctrlBtn' data-action="shutdown"	>shutdown</button>
+			<button class='ctrlBtn' data-action="quit"		>quit</button>
+			<button class='ctrlBtn' data-action="reload"	>reload</button>
+			<button class='ctrlBtn' data-action="clear"		>clear</button>
 		</div>
 
-		<div class="connecting">
+		<div class="connecting widget widget-connecting">
 			recherhe du serveur de spectacle...
 		</div>
 		
-		<div class="namescreen">
+		<div class="namescreen widget widget-name">
 			VOTRE NOM<br />
 			<input type="text" id="namenem" /><button id="nameok">ok</button>
 		</div>
 
-		<div class="content">
+		<div class="content widget widget-intro">
+			<div id="textzone"> LOST IN TRANSITION ENERGETIQUE </div>
+			<br />
+			<br />
+			<img src="https://i.giphy.com/media/rq6c5xD7leHW8/source.gif" />
+			<br />
+		</div>
+
+		<div class="content widget widget-live">
 			<div id="textzone"> LOST IN TRANSITION ENERGETIQUE </div>
 			<video id="remoteVideo" autoplay playsinline></video><br />
 			<button id="play_button" onclick="playVideo()" style="display:none;">Play</button>
 		</div>
 
-		<div class="info">
+		<div class="info widget widget-intro">
 			<div class="infotxt">
 				vous êtes <span class="namedisplay"></span>, merci de respecter les consignes, merci de vous sécuriser, merci de consigner les instructions, merci d'exister en toute sécurité, merci de nous remercier, 
 				vous êtes <span class="namedisplay"></span>, merci de respecter les consignes, merci de vous sécuriser, merci de consigner les instructions, merci d'exister en toute sécurité, merci de nous remercier
