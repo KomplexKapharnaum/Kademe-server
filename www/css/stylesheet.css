@@ -119,7 +119,7 @@ body {
     z-index: 2;
 }
 
-#remoteVideo {
+#remoteVideo, #red5pro-subscriber {
 	height: 80%;
 }
 

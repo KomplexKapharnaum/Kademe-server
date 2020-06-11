@@ -12,7 +12,7 @@
 		<link rel="icon" href="/res/favicon.ico" />
 
 		<!-- Electron compat: Insert this line above script imports  -->
-		<script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+		<script>if (typeof module === 'object') {window.module = module; module = undefined;};</script>
 
 		<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
@@ -21,9 +21,15 @@
 		<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
 
-		<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
-		<script src="/js/webrtc_adaptor.js"></script>
-		
+		<!-- Antmedia -->
+		<!-- <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+		<script src="/js/webrtc_adaptor.js"></script> -->
+
+		<!-- Red5Pro -->
+		<script src="https://webrtchacks.github.io/adapter/adapter-latest.js"></script>
+		<link href="lib/red5pro/red5pro-media.css" rel="stylesheet">
+		<script src="lib/screenfull/screenfull.min.js"></script>
+
 		<script src="/js/script.js"></script>
 		
 		<!-- Electron compat:  Insert this line after script imports -->
@@ -65,8 +71,15 @@
 
 		<div class="content widget widget-live">
 			<div id="textzone"> LOST IN TRANSITION ENERGETIQUE </div>
-			<video id="remoteVideo" autoplay playsinline></video><br />
-			<button id="play_button" onclick="playVideo()" style="display:none;">Play</button>
+			<!-- <video id="remoteVideo" autoplay playsinline></video><br /> -->
+			<!-- <button id="play_button" onclick="playVideo()" style="display:none;">Play</button> -->
+
+			<video id="red5pro-subscriber"
+				class="red5pro-media red5pro-media-background"
+				autoplay>
+			</video>
+			<!-- Exposes `red5prosdk` on the window global. -->
+			<script src="lib/red5pro/red5pro-sdk.min.js"></script>
 		</div>
 
 		<div class="info widget widget-intro">

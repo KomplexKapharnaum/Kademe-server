@@ -15,6 +15,7 @@ app.use('/font', express.static(path.join(__dirname, 'www/font')))
 app.use('/css', express.static(path.join(__dirname, 'www/css')))
 app.use('/res', express.static(path.join(__dirname, 'www/res')))
 app.use('/media', express.static(path.join(__dirname, 'www/media')))
+app.use('/lib', express.static(path.join(__dirname, 'www/lib')))
 
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/www/index.html');
@@ -29,12 +30,12 @@ io.on('connection', function(client)
 
     // Setup client to correct phase
     client.emit('cmd', {'action': 'phase', 'arg': activePhase})
-    client.emit('newcli', book)
+    // client.emit('newcli', book)
 
     // Notify others
     client['name'] = name
-    book.push(client)
-    io.emit('newcli', [name])
+    // book.push(client)
+    // io.emit('newcli', [name])
 
     console.log('cli introduced as', name)
   })
@@ -45,7 +46,7 @@ io.on('connection', function(client)
     let i = book.indexOf(client)
     if (i >= 0) 
     {
-      io.emit('gonecli', client['name'])
+      // io.emit('gonecli', client['name'])
       book.splice(i, 1);
     }
   });
