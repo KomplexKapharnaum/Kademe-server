@@ -94,7 +94,7 @@ body {
 #textzone{
     /* position: relative;  */
     /* top: 33%; */
-    margin: 20px;
+    margin: 10px;
 }
 
 
@@ -119,8 +119,31 @@ body {
     z-index: 2;
 }
 
+.red5pro-media-container {
+    background: fixed;
+    position: absolute !important;
+    top: 7vh;
+    bottom: 35px;
+    right: 0px;
+    left: 0px;
+    overflow: hidden;
+    width: auto;
+    height: auto !important;
+}
+
 #remoteVideo, #red5pro-subscriber {
-	height: 80%;
+    height: 100%;
+    width: 100%;
+}
+
+#gauge-container {
+    position: absolute;
+    top: 16%;
+    width: 9.2%;
+    bottom: 11%;
+    right: 7.5%;
+    background-color: transparent;
+    background-size: cover;
 }
 
 

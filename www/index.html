@@ -42,9 +42,12 @@
 		<div class="controls">
 			<button class='ctrlBtn' data-action="phase"	data-arg="intro" >intro</button>
 			<button class='ctrlBtn' data-action="phase"	data-arg="live"  >live</button>
-			<button class='ctrlBtn' data-action="phase"	data-arg="break" >break</button>
-			<button class='ctrlBtn' data-action="phase"	data-arg="prod"  >prod</button>
-			<button class='ctrlBtn' data-action="phase"	data-arg="end"   >end</button>
+			<button class='ctrlBtn' data-action="phase"	data-arg="space" >space</button>
+			<button class='ctrlBtn' data-action="phase"	data-arg="spaceSpeed" >spaceSpeed</button>
+			<button class='ctrlBtn' data-action="phase"	data-arg="off"   >off</button>
+			<button class='ctrlBtn' data-action="phase"	data-arg="refill"   >refill</button>
+			<button class='ctrlBtn' data-action="phase"	data-arg="freak" >freak</button>
+			<button class='ctrlBtn' data-action="phase"	data-arg="ctrl"  >ctrl</button>
 
 			<button class='ctrlBtn' data-action="shutdown"	>shutdown</button>
 			<button class='ctrlBtn' data-action="quit"		>quit</button>
@@ -61,34 +64,38 @@
 			<input type="text" id="namenem" /><button id="nameok">ok</button>
 		</div>
 
+
+		<!-- INTRO -->
 		<div class="content widget widget-intro">
-			<div id="textzone"> LOST IN TRANSITION ENERGETIQUE </div>
+			<div id="textzone"> KOMPLEX KAPHARNAUM THEATRE </div>
 			<br />
 			<br />
 			<img src="https://i.giphy.com/media/rq6c5xD7leHW8/source.gif" />
 			<br />
-		</div>
 
-		<div class="content widget widget-live">
-			<div id="textzone"> LOST IN TRANSITION ENERGETIQUE </div>
-			<!-- <video id="remoteVideo" autoplay playsinline></video><br /> -->
-			<!-- <button id="play_button" onclick="playVideo()" style="display:none;">Play</button> -->
-
-			<video id="red5pro-subscriber"
-				class="red5pro-media red5pro-media-background"
-				autoplay>
-			</video>
-			<!-- Exposes `red5prosdk` on the window global. -->
-			<script src="lib/red5pro/red5pro-sdk.min.js"></script>
-		</div>
-
-		<div class="info widget widget-intro">
 			<div class="infotxt">
 				vous êtes <span class="namedisplay"></span>, merci de respecter les consignes, merci de vous sécuriser, merci de consigner les instructions, merci d'exister en toute sécurité, merci de nous remercier, 
 				vous êtes <span class="namedisplay"></span>, merci de respecter les consignes, merci de vous sécuriser, merci de consigner les instructions, merci d'exister en toute sécurité, merci de nous remercier
 			</div>
 		</div>
 
+
+		<!-- LIVE -->
+		<div class="content widget widget-live">
+			<div id="textzone"> KOMPLEX KAPHARNAUM THEATRE </div>
+			<video id="red5pro-subscriber" class="red5pro-media red5pro-media-background" autoplay></video>
+			
+		</div>
+
+
+		<!-- SPACE -->
+		<div class="content widget widget-space">
+			<div id="gauge-container"></div>
+		</div>
+		
+
+
+		<script src="lib/red5pro/red5pro-sdk.min.js"></script>
 	</body>
 
 	

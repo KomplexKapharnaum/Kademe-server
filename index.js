@@ -9,12 +9,11 @@ var app = express();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http); 
 
-
 app.use('/js', express.static(path.join(__dirname, 'www/js')))
 app.use('/font', express.static(path.join(__dirname, 'www/font')))
 app.use('/css', express.static(path.join(__dirname, 'www/css')))
 app.use('/res', express.static(path.join(__dirname, 'www/res')))
-app.use('/media', express.static(path.join(__dirname, 'www/media')))
+app.use('/img', express.static(path.join(__dirname, 'www/img')))
 app.use('/lib', express.static(path.join(__dirname, 'www/lib')))
 
 app.get('/', function(req, res){
