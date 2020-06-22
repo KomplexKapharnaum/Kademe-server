@@ -48,9 +48,9 @@
 			<button class='ctrlBtn' data-action="phase"	data-arg="refill"   >refill</button>
 			<button class='ctrlBtn' data-action="phase"	data-arg="freak" >freak</button>
 			<button class='ctrlBtn' data-action="phase"	data-arg="ctrl"  >ctrl</button>
+			<button class='ctrlBtn' data-action="shutdown" id="shutdown-btn"	>shutdown</button>
+			<button class='ctrlBtn' data-action="phase" id="quit-btn"	data-arg="quit"  >quit</button>
 
-			<button class='ctrlBtn' data-action="shutdown"	>shutdown</button>
-			<button class='ctrlBtn' data-action="quit"		>quit</button>
 			<button class='ctrlBtn' data-action="reload"	>reload</button>
 			<button class='ctrlBtn' data-action="clear"		>clear</button>
 		</div>
@@ -67,16 +67,22 @@
 
 		<!-- INTRO -->
 		<div class="content widget widget-intro">
-			<div id="textzone"> KOMPLEX KAPHARNAUM THEATRE </div>
-			<br />
-			<br />
-			<img src="https://i.giphy.com/media/rq6c5xD7leHW8/source.gif" />
-			<br />
-
-			<div class="infotxt">
-				vous êtes <span class="namedisplay"></span>, merci de respecter les consignes, merci de vous sécuriser, merci de consigner les instructions, merci d'exister en toute sécurité, merci de nous remercier, 
-				vous êtes <span class="namedisplay"></span>, merci de respecter les consignes, merci de vous sécuriser, merci de consigner les instructions, merci d'exister en toute sécurité, merci de nous remercier
+			<div class='introtxt'>
+				<br />
+				<br />
+				Bonjour <span class="namedisplay"></span>,<br />
+				<br />
+				Dans quelques instants retrouvez <br />
+				Stephane Bonnard,<br />
+				co-directeur artistique de  <img class="intrologo" src="/img/kxkm.png" /><br />
+				<br />
+				avec le projet:<br />
+				<span class="introtitle">Une architecture du soleil</span>
+				<br />
+				<br />
+				<img class="introimg" src="/img/jauge.gif" />
 			</div>
+			
 		</div>
 
 
@@ -90,9 +96,41 @@
 
 		<!-- SPACE -->
 		<div class="content widget widget-space">
-			<div id="gauge-container"></div>
+			<div class="gauge-container"></div>
+			<div class="spaceoverlay"></div>
+			<img src="/img/space.gif" id="space-gif" />
+		</div>
+
+		<!-- CTRL -->
+		<div class="content widget widget-ctrl">
+			<img src="/img/ctrl.gif" id="ctrl-gif" />
+		</div>
+
+		<!-- WINNER -->
+		<div class="content widget widget-winner">
+			<div class="winneroverlay">
+				<span class="thewinner"></span> a pris la décision.
+			</div>
+		</div>
+
+		<!-- FAKE SHUTDOWN -->
+		<div class="content widget widget-shutdown">
+			<div class="suhtdownoverlay">
+				<img src="/img/shutdown.gif" id="shutdown-gif" />
+			</div>
 		</div>
 		
+		<!-- QUIT -->
+		<div class="content widget widget-quit">
+			<div class='introtxt'>
+				<br />
+				<br />
+				<br />
+				<br />
+				<br />
+				Merci et à bientôt !
+			</div>
+		</div>
 
 
 		<script src="lib/red5pro/red5pro-sdk.min.js"></script>

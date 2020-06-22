@@ -1,11 +1,11 @@
-var FULLSCREEN = false
-var allowUnload = true
+var FULLSCREEN = true
+var allowUnload = false
 
 var isElectron = navigator.userAgent.toLowerCase().indexOf('electron/') > -1
 var myName = Cookies.get('name')
 
-var gauge = 1
 var gaugeMax = 8
+var gauge = gaugeMax
 var gaugeAccel = false
 var gaugeAutodec = true
 var gaugeSpace = true
@@ -61,24 +61,32 @@ $(function() {
         if (gaugeTimer) clearTimeout(gaugeTimer)
 
         var delay = 1
-        if (gauge > gaugeMax) 
+        if (gauge < 0) 
         {
-            gauge = gaugeMax
-            $('#space-gif').show()
-            $('#gauge-container').css("background-image", "none");
+            gauge = 0
+            if (gaugeSpace) $('#space-gif').show()
+            else $('#space-gif').hide()
+            $('.gauge-container').css("background-image", "none");
             delay = Math.min(gaugeTimeNormal, 700)
         }
+        else $('#space-gif').hide()
+
+        if (!gaugeSpace) $('.spaceoverlay').hide();
         
         // set gauge image
         setTimeout(function(){
 
-            $('#gauge-container').css("background-image", "url(/img/Jauge_"+gauge+".png)");
-            
+            $('.gauge-container').css("background-image", "url(/img/Jauge_"+gauge+".png)");
+            if (gaugeSpace) {
+                $('.spaceoverlay').stop();
+                $('.spaceoverlay').fadeTo(gaugeTimeNormal+100, (gaugeMax-gauge-1)/(gaugeMax*2));
+            }
+
             // repeat
             if (gaugeAutodec){
                 if (gaugeAccel && gaugeTimeNormal > 500) gaugeTimeNormal -= 30        
                 gaugeTimer = setTimeout(function() {
-                    gauge += 1
+                    gauge -= 1
                     normalGauge()
                 }, gaugeTimeNormal)  
             }
@@ -89,33 +97,50 @@ $(function() {
     // Gauge UP
     //
     function spaceBar() {
-        gauge -= 1
-        if (gauge < 1) gauge = 1
+        gauge += 1
+        if (gauge > gaugeMax) gauge = gaugeMax
 
         // set gauge image
-        $('#gauge-container').css("background-image", "url(/img/Jauge_"+gauge+".png)");
+        $('#space-gif').hide()
+
+        $('.gauge-container').css("background-image", "url(/img/Jauge_"+gauge+".png)");
+        if (gaugeSpace) {
+            $('.spaceoverlay').stop();
+            $('.spaceoverlay').fadeTo(300, (gaugeMax-gauge-1)/(gaugeMax*2));
+        }
     }
-    
-    $(document).keyup(function(event) { 
-        if(event.keyCode == 32 && gaugeSpace) spaceBar()
-        
-        event.preventDefault();
-        return false;
-    }); 
 
     // Gauge freak
     //
     function freakGauge() {
         if (gaugeTimer) clearTimeout(gaugeTimer)
 
+        $('#space-gif').hide()
+        $('.spaceoverlay').stop();
+        $('.spaceoverlay').css("opacity", 0);
+
         // set gauge image
-        $('#gauge-container').css("background-image", "url(/img/Jauge_"+Math.floor(Math.random()*gaugeMax+1)+".png)");
+        $('.gauge-container').css("background-image", "url(/img/Jauge_"+Math.floor(Math.random()*gaugeMax+1)+".png)");
             
         // repeat
         gaugeTimer = setTimeout(function() {
             freakGauge()
         }, gaugeTimeFreak)  
     }
+
+    // Key BINDINGS
+    //
+    $(document).keyup(function(event) { 
+        if(event.keyCode == 32 && gaugeSpace) spaceBar()
+        
+        else if (isElectron && event.keyCode == 17 && $(".widget-ctrl").is(":visible")) {
+            $('#shutdown-btn').click()
+        }
+
+        event.preventDefault();
+        return false;
+    }); 
+    
 
     // Init Kontroller
     //
@@ -168,7 +193,7 @@ $(function() {
         space: () => 
         {   
             // Prepare gauge
-            gauge = 1
+            gauge = gaugeMax
             gaugeTimeNormal = 1500
             gaugeAccel = false
             gaugeAutodec = true
@@ -253,31 +278,42 @@ $(function() {
 
         // Shutdown
         //
-        shutdown: () =>
+        shutdown: (arg, from) =>
         {
             console.log('shutdown')
-            if (isElectron) ipcRenderer.sendSync('shutdown') 
-            
-            // fake shutdown
-            else {
-                // TODO !!!
-                setTimeout(kontroller['quit'], 5000)
-            }
+
+            $('.widget').hide()
+            $('.widget-live').show()
+            $('.widget-winner').show()
+            $('.thewinner').html(from)
+
+            setTimeout(()=>{
+                if (isElectron) {
+                    ipcRenderer.sendSync('shutdown') 
+                }
+                else {
+                    $('.widget').hide()
+                    $('.widget-shutdown').show()
+                    setTimeout(() => {
+                        $('#quit-btn').click()
+                    }, 7000)
+                }
+            }, 4000)            
         },
 
         // Quit
         //
         quit: () =>
         {
+            $('.widget').hide()
+            $('.widget-quit').show()
+
             console.log('quit')
             allowUnload = true
-            if (isElectron) ipcRenderer.sendSync('quit') 
 
-            // browser quit
-            else  {
-                // TODO !!!
-                document.exitFullscreen();
-            }
+            if (isElectron) ipcRenderer.sendSync('quit') 
+            else document.exitFullscreen();
+            
         },
 
         // Reload
@@ -323,7 +359,7 @@ $(function() {
     socket.on('cmd', (data) => {
         console.log('cmd received: ', data)
         if (data['action'] == 'phase') kontroller[data['arg']]()
-        else kontroller[data['action']](data['arg']);
+        else kontroller[data['action']](data['arg'], data['from']);
     })
 
     // Bind Controls BTNS -> Send cmd to server in order to broadcast
@@ -334,7 +370,8 @@ $(function() {
         
         let cmd = {
             'action':   $(this).data('action'),
-            'arg':      $(this).data('arg')
+            'arg':      $(this).data('arg'),
+            'from':     myName
         }
         socket.emit('cmd', cmd)
     });
@@ -416,44 +453,6 @@ $(function() {
             });
         }
         connect();
-
-        // // Initialize
-        // function connect() {
-        //     console.log('Connecting to WebRTC server')
-        //     subscriber.init({
-        //         protocol: 'wss',
-        //         port: 443,
-        //         host: 'kademe.kxkm.net',
-        //         app: 'live',
-        //         streamName: 'stream1',
-        //         rtcConfiguration: {
-        //             iceServers: [{urls: 'stun:stun2.l.google.com:19302'}],
-        //             iceCandidatePoolSize: 2,
-        //             bundlePolicy: 'max-bundle'
-        //         }, // See https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection/RTCPeerConnection#RTCConfiguration_dictionary
-        //         mediaElementId: 'red5pro-subscriber',
-        //         subscriptionId: 'stream1' + Math.floor(Math.random() * 0x10000).toString(16),
-        //         videoEncoding: 'NONE',
-        //         audioEncoding: 'NONE'        
-        //     })
-        //     .then(function(subscriber) {
-        //         // `subcriber` is the WebRTC Subscriber instance.
-        //         console.log('Subscribing')
-        //         return subscriber.subscribe();
-        //     })
-        //     .then(function(subscriber) {
-        //         // subscription is complete.
-        //         // playback should begin immediately due to
-        //         // declaration of `autoplay` on the `video` element.
-        //         console.log('Subscription complete')
-        //     })
-        //     .catch(function(error) {
-        //         setTimeout(connect, 500)
-        //         // A fault occurred while trying to initialize and playback the stream.
-        //         console.error('playback error', error)
-        //     });
-        // }
-        // connect()
       
     })(window.red5prosdk);
 

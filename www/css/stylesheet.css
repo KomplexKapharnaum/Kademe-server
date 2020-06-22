@@ -1,30 +1,39 @@
 
 
 @font-face {
-    font-family: 'musicnetregular';
-    src: url('/font/musicnet-webfont.woff2') format('woff2'),
-         url('/font/musicnet-webfont.woff') format('woff');
+    font-family: dinbold;
+    src: url('/font/DIN_Bold.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: newsgot;
+    src: url('/font/News_Oblique.woff') format('woff');
     font-weight: normal;
     font-style: normal;
 
 }
 
 body {
-    font-family: 'musicnetregular';
+    font-family: dinbold;
     /* font-size: 80px; */
-    font-size: 3vw;
-    color: red;
+    font-size: 3.2vh;
+    line-height: 4vh;
+    color: white;
     background: black;
 
     width: 100%; 
     height: 100%;
+    overflow: hidden;
 }
 
 .controls {
     display: none;
     padding: 5px;
     background-color: #666;
-    z-index: 10;
+    z-index: 2000;
     position: fixed;
     top: 0;
     width: 100%;
@@ -41,15 +50,14 @@ body {
 }
 
 .info {
-    display: none;
     color: white;
     background-color: #333;
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
-    font-size: 18px;
-    font-family: 'Courier New', Courier, monospace;
+    font-size: 2.2vh;
+    font-family: 'newsgot', 'Courier New', Courier, monospace;
 
     height:40px;
     line-height:40px;
@@ -57,6 +65,7 @@ body {
 }
 
 .infotxt {
+    width: 100%;
     position:absolute;
     animation-name: slide;
     animation-duration: 40s;
@@ -70,18 +79,18 @@ body {
 
 .content {
     display: none;
-    color: red;
+    color: white;
     width: 100%; 
     height: 100%;
     position: absolute; 
     top: 0; 
     left: 0;
     bottom: 50px;
-    text-align: center;
+    /* text-align: center; */
     vertical-align: center;
     
     /* padding: 20px; */
-
+    background-color: transparent;
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-position: center; 
@@ -90,6 +99,49 @@ body {
     -o-background-size: contain;
     background-size: contain;
 }
+
+.introtxt {
+    margin: auto;
+    width: 40vw;
+}
+
+.introtitle {
+    font-family: newsgot;
+    font-size: 3vh; 
+    line-height: 6.5vh;
+    margin-left: 1vw;
+}
+
+.intrologo {
+    height: 6vh;
+    width: auto;
+    position: absolute;
+    margin-left: 1.5vw;
+    margin-top: -2.6vh;
+}
+
+.introimg {
+    width: 34vw;
+}
+
+#space-gif {
+    width: 28vw;
+    position: fixed;
+    bottom: 11%;
+    left: 35vw;
+    z-index: 200;
+}
+
+#ctrl-gif {
+    width: 5vw;
+    position: fixed;
+    bottom: 11%;
+    left: 5vw;
+    z-index: 200;
+}
+
+
+
 
 #textzone{
     /* position: relative;  */
@@ -136,16 +188,60 @@ body {
     width: 100%;
 }
 
-#gauge-container {
+.gauge-container {
     position: absolute;
     top: 16%;
-    width: 9.2%;
+    width: 120px;
     bottom: 11%;
     right: 7.5%;
     background-color: transparent;
     background-size: cover;
+    z-index: 200;
 }
 
+.spaceoverlay {
+    position: fixed;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    background-color: black;
+    /* display: none; */
+    z-index: 100;
+    opacity: 0;
+}
+
+.winneroverlay {
+    position: fixed;
+    top: 30%;
+    left: 30%;
+    background-color: black;
+    padding: 15vh;
+    /* display: none; */
+    z-index: 400;
+}
+
+.suhtdownoverlay {
+    position: fixed;
+    top: 0px;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    background-color: #025A9C;
+    /* display: none; */
+    z-index: 300;
+}
+
+#shutdown-gif
+{
+    position:absolute;
+    width:546px; /*image width */
+    height:262px; /*image height */
+    left:50%; 
+    top:50%;
+    margin-left:-273px; /*image width/2 */
+    margin-top:-131px; /*image height/2 */
+}
 
 
 @-moz-keyframes blinker {  
