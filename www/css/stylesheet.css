@@ -36,6 +36,7 @@ body {
     z-index: 2000;
     position: fixed;
     top: 0;
+    left: 50vw;
     width: 100%;
     font-size: 18px;
 }
@@ -127,7 +128,7 @@ body {
 #space-gif {
     width: 28vw;
     position: fixed;
-    bottom: 11%;
+    bottom: 5%;
     left: 35vw;
     z-index: 200;
 }
@@ -135,8 +136,8 @@ body {
 #ctrl-gif {
     width: 5vw;
     position: fixed;
-    bottom: 11%;
-    left: 5vw;
+    bottom: 5%;
+    left: 6.5vw;
     z-index: 200;
 }
 
@@ -190,9 +191,9 @@ body {
 
 .gauge-container {
     position: absolute;
-    top: 16%;
-    width: 120px;
-    bottom: 11%;
+    top: 18%;
+    width: 118px;
+    bottom: 14%;
     right: 7.5%;
     background-color: transparent;
     background-size: cover;

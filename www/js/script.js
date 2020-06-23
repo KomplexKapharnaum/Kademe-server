@@ -55,6 +55,15 @@ $(function() {
         $('#red5pro-subscriber').muted = false;
     }
 
+    // Gauge Apply
+    function applyGauge(fadeSpeed) {
+        $('.gauge-container').css("background-image", "url(/img/Jauge_"+gauge+".png)");
+        if (gaugeSpace) {
+            $('.spaceoverlay').stop();
+            $('.spaceoverlay').fadeTo(fadeSpeed, (gaugeMax-gauge-1)/(gaugeMax*1.1));
+        }
+    }
+
     // Gauge DOWN
     //
     function normalGauge() {
@@ -76,11 +85,7 @@ $(function() {
         // set gauge image
         setTimeout(function(){
 
-            $('.gauge-container').css("background-image", "url(/img/Jauge_"+gauge+".png)");
-            if (gaugeSpace) {
-                $('.spaceoverlay').stop();
-                $('.spaceoverlay').fadeTo(gaugeTimeNormal+100, (gaugeMax-gauge-1)/(gaugeMax*2));
-            }
+            applyGauge(gaugeTimeNormal+100)
 
             // repeat
             if (gaugeAutodec){
@@ -103,11 +108,7 @@ $(function() {
         // set gauge image
         $('#space-gif').hide()
 
-        $('.gauge-container').css("background-image", "url(/img/Jauge_"+gauge+".png)");
-        if (gaugeSpace) {
-            $('.spaceoverlay').stop();
-            $('.spaceoverlay').fadeTo(300, (gaugeMax-gauge-1)/(gaugeMax*2));
-        }
+        applyGauge(300)
     }
 
     // Gauge freak
@@ -288,16 +289,20 @@ $(function() {
             $('.thewinner').html(from)
 
             setTimeout(()=>{
+
+                // real shutdown
                 if (isElectron) {
                     ipcRenderer.sendSync('shutdown') 
                 }
-                else {
-                    $('.widget').hide()
-                    $('.widget-shutdown').show()
-                    setTimeout(() => {
-                        $('#quit-btn').click()
-                    }, 7000)
-                }
+                
+                // fake shutdown
+                $('.widget').hide()
+                $('.widget-shutdown').show()
+
+                setTimeout(() => {
+                    $('#quit-btn').click()
+                }, 7000)
+                
             }, 4000)            
         },
 
@@ -311,7 +316,7 @@ $(function() {
             console.log('quit')
             allowUnload = true
 
-            if (isElectron) ipcRenderer.sendSync('quit') 
+            if (isElectron) setTimeout(() => { ipcRenderer.sendSync('quit') }, 4000)
             else document.exitFullscreen();
             
         },
