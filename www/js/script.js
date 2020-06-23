@@ -22,12 +22,14 @@ $(function() {
     //
     if (isElectron) 
     {
-        const { ipcRenderer } = require('electron')
+        console.log('running inside Electron');
+        var { ipcRenderer } = require('electron')
 
         ipcRenderer.on('devmode', (event, arg) => {
             console.log('devmode');
         })
     }
+    else console.log('running outside Electron');
 
     // Prevent Closing (Alt+F4)
     //
@@ -35,7 +37,7 @@ $(function() {
     
     // Devmode
     document.onkeyup = function(e) {
-       if (e.ctrlKey && e.altKey  && e.which == 75) $(".controls").show()
+       if (e.ctrlKey && e.altKey && e.shiftKey  && e.which == 75) $(".controls").show()
     };
 
     // Get Name
@@ -135,7 +137,7 @@ $(function() {
         if(event.keyCode == 32 && gaugeSpace) spaceBar()
         
         else if (isElectron && event.keyCode == 17 && $(".widget-ctrl").is(":visible")) {
-            $('#shutdown-btn').click()
+            $('#winner-btn').click()
         }
 
         event.preventDefault();
@@ -175,6 +177,8 @@ $(function() {
         //
         intro: () => 
         {
+            $("#red5pro-subscriber").prop('muted', true)
+
             // Show
             $('.widget').hide()
             $('.widget-intro').show()
@@ -184,9 +188,11 @@ $(function() {
         //
         live: () => 
         {
+            
             // Show
             $('.widget').hide()
             $('.widget-live').show()
+            $("#red5pro-subscriber").prop('muted', false)
         },
 
         // Space
@@ -204,6 +210,7 @@ $(function() {
             // Show
             $('.widget').hide()
             $('.widget-live').show()
+            $("#red5pro-subscriber").prop('muted', false)
             $('.widget-space').show()
         },
 
@@ -221,6 +228,7 @@ $(function() {
             // Show
             $('.widget').hide()
             $('.widget-live').show()
+            $("#red5pro-subscriber").prop('muted', false)
             $('.widget-space').show()
         },
 
@@ -237,6 +245,7 @@ $(function() {
             // Show
             $('.widget').hide()
             $('.widget-live').show()
+            $("#red5pro-subscriber").prop('muted', false)
             $('.widget-space').show()
         },
 
@@ -252,6 +261,7 @@ $(function() {
             // Show
             $('.widget').hide()
             $('.widget-live').show()
+            $("#red5pro-subscriber").prop('muted', false)
             $('.widget-space').show()
         },
 
@@ -264,6 +274,7 @@ $(function() {
             // Show
             $('.widget').hide()
             $('.widget-live').show()
+            $("#red5pro-subscriber").prop('muted', false)
             $('.widget-space').show()
         },
 
@@ -274,46 +285,57 @@ $(function() {
             // Show
             $('.widget').hide()
             $('.widget-live').show()
+            $("#red5pro-subscriber").prop('muted', false)
             $('.widget-ctrl').show()
+        },
+
+        // Winner
+        //
+        winner: (from) => 
+        {    
+            $('.widget').hide()
+            $('.widget-live').show()
+            $("#red5pro-subscriber").prop('muted', false)
+            $('.widget-winner').show()
+            $('.thewinner').html(from)
         },
 
         // Shutdown
         //
-        shutdown: (arg, from) =>
+        fakeshot: () =>
         {
-            console.log('shutdown')
+            console.log('fakeshot')
+            $("#red5pro-subscriber").prop('muted', true)
 
+            // fake shutdown
             $('.widget').hide()
-            $('.widget-live').show()
-            $('.widget-winner').show()
-            $('.thewinner').html(from)
+            $('.widget-shutdown').show()
 
-            setTimeout(()=>{
+        },
 
-                // real shutdown
-                if (isElectron) {
-                    ipcRenderer.sendSync('shutdown') 
-                }
-                
-                // fake shutdown
-                $('.widget').hide()
-                $('.widget-shutdown').show()
+        // Shutdown
+        //
+        realshot: (arg, from) =>
+        {   
+            console.log('realshot')
+            $("#red5pro-subscriber").prop('muted', true)
 
-                setTimeout(() => {
-                    $('#quit-btn').click()
-                }, 7000)
-                
-            }, 4000)            
+            // real shutdown
+            if (isElectron) {
+                ipcRenderer.sendSync('shutdown') 
+            }
         },
 
         // Quit
         //
-        quit: () =>
+        end: () =>
         {
-            $('.widget').hide()
-            $('.widget-quit').show()
+            console.log('end')
+            $("#red5pro-subscriber").prop('muted', true)
 
-            console.log('quit')
+            $('.widget').hide()
+            $('.widget-end').show()
+
             allowUnload = true
 
             if (isElectron) setTimeout(() => { ipcRenderer.sendSync('quit') }, 4000)
@@ -363,7 +385,7 @@ $(function() {
     //
     socket.on('cmd', (data) => {
         console.log('cmd received: ', data)
-        if (data['action'] == 'phase') kontroller[data['arg']]()
+        if (data['action'] == 'phase') kontroller[data['arg']](data['from'])
         else kontroller[data['action']](data['arg'], data['from']);
     })
 

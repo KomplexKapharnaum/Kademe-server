@@ -1,6 +1,6 @@
 // kademe-server
 
-var activePhase = 'intro'
+var lastCmd =  {'action': 'phase', 'arg': 'intro', 'from': 'Bonnard'}
 var book = []
 
 var path = require('path')
@@ -28,7 +28,7 @@ io.on('connection', function(client)
   client.on('iam', (name)=>{
 
     // Setup client to correct phase
-    client.emit('cmd', {'action': 'phase', 'arg': activePhase})
+    client.emit('cmd', lastCmd)
     // client.emit('newcli', book)
 
     // Notify others
@@ -53,7 +53,7 @@ io.on('connection', function(client)
   // Relay cmd from Kontroler to all clients
   client.on('cmd', (data)=>{
     console.log('relay cmd', data);
-    if (data.action == 'phase') activePhase = data.arg // save activePhase
+    if (data.action == 'phase') lastCmd = data // save activePhase
     io.emit('cmd', data)
   })
 
