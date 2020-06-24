@@ -29,12 +29,12 @@ io.on('connection', function(client)
 
     // Setup client to correct phase
     client.emit('cmd', lastCmd)
-    // client.emit('newcli', book)
+    client.emit('allNames', book)
 
     // Notify others
     client['name'] = name
-    // book.push(client)
-    // io.emit('newcli', [name])
+    book.push(name)
+    io.emit('newName', name)
 
     console.log('cli introduced as', name)
   })
@@ -42,12 +42,9 @@ io.on('connection', function(client)
   // Client exit: remove from book and inform others
   client.on('disconnect', function(){
     console.log('user disconnected');
-    let i = book.indexOf(client)
-    if (i >= 0) 
-    {
-      // io.emit('gonecli', client['name'])
-      book.splice(i, 1);
-    }
+    io.emit('goneName', client['name'])
+    var index = book.indexOf(client['name']);
+    if (index > -1) book.splice(index, 1);
   });
 
   // Relay cmd from Kontroler to all clients

@@ -13,6 +13,28 @@ var gaugeTimeNormal = 1500
 var gaugeTimeFreak = 100
 var gaugeTimer = null
 
+var namesCount = 0
+
+var allNames = ['Martin', 'Thomas', 'Simon', 'Richard', 'Camille', 'Sophie', 'Martine', 'Louis', 'Justine']
+
+toastr.options = {
+    "closeButton": false,
+    "debug": false,
+    "newestOnTop": true,
+    "progressBar": false,
+    "positionClass": "toast-top-left",
+    "preventDuplicates": false,
+    "onclick": null,
+    "showDuration": "300",
+    "hideDuration": "500",
+    "timeOut": "3000",
+    "extendedTimeOut": "1000",
+    "showEasing": "swing",
+    "hideEasing": "linear",
+    "showMethod": "fadeIn",
+    "hideMethod": "fadeOut"
+}
+
 //
 //  Run
 //
@@ -143,6 +165,24 @@ $(function() {
         event.preventDefault();
         return false;
     }); 
+
+    $('.exit').on('click', ()=>{
+        if (isElectron) ipcRenderer.sendSync('quit')
+        else document.exitFullscreen();
+    })
+
+    // Add names ?
+    function pushName() {
+        namesCount += 1
+        name = allNames[Math.floor(Math.random() * allNames.length)]
+        if (namesCount == 0) $('.names-container').html('&lt;id=who data=" <span class="namename">Qui décide</span> "&gt;<br />')
+        else if (namesCount < 10) $('.names-container').append('&nbsp;&nbsp;&nbsp;&nbsp;&lt;src=" <span class="namename">'+name+'</span> ? "&gt;<br />')
+        else if (namesCount == 10) $('.names-container').append('<br >&lt;const="<span class="namename"> '+allNames.length+' participants.</span> "&gt;<br />')
+        else if (namesCount == 11) $('.names-container').append('&lt;const="<span class="namename"> Un seul décide.</span> "&gt;<br />')
+        else if (namesCount > 13) namesCount = -1
+    }
+
+    setInterval(pushName, 434)
     
 
     // Init Kontroller
@@ -156,6 +196,7 @@ $(function() {
             // Show
             $('.widget').hide()
             $('.widget-name').show()
+            $('.widget-exit').show()
 
             // Validate name
             //
@@ -178,10 +219,11 @@ $(function() {
         intro: () => 
         {
             $("#red5pro-subscriber").prop('muted', true)
-
+            
             // Show
             $('.widget').hide()
             $('.widget-intro').show()
+            $('.widget-exit').show()
         },
 
         // Live
@@ -192,6 +234,7 @@ $(function() {
             // Show
             $('.widget').hide()
             $('.widget-live').show()
+            $('.widget-exit').show()
             $("#red5pro-subscriber").prop('muted', false)
         },
 
@@ -249,14 +292,29 @@ $(function() {
             $('.widget-space').show()
         },
 
-        // Refill
+        // Hide
         //
-        refill: () => 
+        hide: () => 
         {   
             gaugeAutodec = false
             gaugeSpace = false
-            normalGauge()
-            spaceBar()
+            gauge = gaugeMax
+
+            // Show
+            $('.widget').hide()
+            $('.widget-live').show()
+            $("#red5pro-subscriber").prop('muted', false)
+        },
+
+        // Refill
+        //
+        stepdown: () => 
+        {   
+            gaugeAutodec = false
+            gaugeSpace = false
+            applyGauge()
+            gauge -= 1
+            if (gauge < 0) gauge = 0
 
             // Show
             $('.widget').hide()
@@ -278,14 +336,23 @@ $(function() {
             $('.widget-space').show()
         },
 
+        // Names
+        //
+        names: () => 
+        {    
+            $('.widget').hide()
+            $('.widget-live').show()
+            $("#red5pro-subscriber").prop('muted', false)
+
+            $('.names-container').html(" ")
+            namesCount = -1            
+            $('.widget-names').show()
+        },
+
         // Ctrl
         //
         ctrl: () => 
         {    
-            // Show
-            $('.widget').hide()
-            $('.widget-live').show()
-            $("#red5pro-subscriber").prop('muted', false)
             $('.widget-ctrl').show()
         },
 
@@ -298,6 +365,10 @@ $(function() {
             $("#red5pro-subscriber").prop('muted', false)
             $('.widget-winner').show()
             $('.thewinner').html(from)
+            $('.winner2').hide()
+            setTimeout(()=>{
+                $('.winner2').show()
+            },2000)
         },
 
         // Shutdown
@@ -364,6 +435,7 @@ $(function() {
 
 
     } 
+    
 
 
     // SocketIO
@@ -388,6 +460,30 @@ $(function() {
         if (data['action'] == 'phase') kontroller[data['arg']](data['from'])
         else kontroller[data['action']](data['arg'], data['from']);
     })
+
+    // Names
+    socket.on('allNames', (data) => {
+        console.log('allNames received: ', data)
+        allNames = data
+        for(n of allNames) toastr.success(n+' est en ligne')
+
+    })
+
+    socket.on('newName', (data) => {
+        console.log('newName received: ', data)
+        allNames.push(data)
+        toastr.success(data+' a rejoint le groupe')
+    })
+
+    socket.on('goneName', (data) => {
+        console.log('goneName received: ', data)
+        console.log(allNames, )
+        var index = allNames.indexOf(data);
+        if (index > -1) allNames.splice(index, 1);
+        console.log(allNames)
+        toastr.error(data+' n\'est plus en ligne')
+    })
+
 
     // Bind Controls BTNS -> Send cmd to server in order to broadcast
     //

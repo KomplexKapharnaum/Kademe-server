@@ -16,6 +16,13 @@
 
 }
 
+@font-face {
+    font-family: Monaco;
+    font-style: normal;
+    font-weight: normal;
+    src: url('/font/Monaco.woff') format('woff');
+    }
+
 body {
     font-family: dinbold;
     /* font-size: 80px; */
@@ -29,6 +36,10 @@ body {
     overflow: hidden;
 }
 
+.toast {
+    font-size: 2vh;
+}
+
 .controls {
     display: none;
     padding: 5px;
@@ -36,7 +47,7 @@ body {
     z-index: 2000;
     position: fixed;
     top: 0;
-    left: 50vw;
+    left: 40vw;
     width: 100%;
     font-size: 18px;
 }
@@ -134,15 +145,23 @@ body {
 }
 
 #ctrl-gif {
-    width: 5vw;
+    width: 8px;
     position: fixed;
-    bottom: 5%;
-    left: 6.5vw;
+    top: 20px;
+    left: 0;
     z-index: 200;
 }
 
 
-
+.exit {
+    background-color: black;
+    color: white;
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0px 4px;
+    z-index: 10000;
+}
 
 #textzone{
     /* position: relative;  */
@@ -212,6 +231,24 @@ body {
     opacity: 0;
 }
 
+.names-container {
+    position: absolute;
+    top: 18%;
+    width: 50vw;
+    bottom: 14%;
+    left: 7.5%;
+    background-color: transparent;
+    background-size: cover;
+    z-index: 300;
+    font-family: Monaco;
+    font-size: 2vh;
+    line-height: 4.5vh;
+}
+
+.namename {
+    font-size: 3vh;
+}
+
 .winneroverlay {
     position: fixed;
     top: 30%;
@@ -243,6 +280,7 @@ body {
     margin-left:-273px; /*image width/2 */
     margin-top:-131px; /*image height/2 */
 }
+
 
 
 @-moz-keyframes blinker {  

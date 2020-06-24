@@ -42,12 +42,17 @@
 		<div class="controls">
 			<button class='ctrlBtn' data-action="phase"	data-arg="intro" >intro</button>
 			<button class='ctrlBtn' data-action="phase"	data-arg="live"  >live</button>
+			//
 			<button class='ctrlBtn' data-action="phase"	data-arg="space" >space</button>
 			<button class='ctrlBtn' data-action="phase"	data-arg="spaceSpeed" >spaceSpeed</button>
 			<button class='ctrlBtn' data-action="phase"	data-arg="off"   >off</button>
-			<button class='ctrlBtn' data-action="phase"	data-arg="refill"   >refill</button>
+			<button class='ctrlBtn' data-action="phase"	data-arg="hide"   >hide</button>
+			<button class='ctrlBtn' data-action="phase"	data-arg="stepdown" >stepdown</button>
 			<button class='ctrlBtn' data-action="phase"	data-arg="freak" >freak</button>
-			<button class='ctrlBtn' data-action="phase"	data-arg="ctrl"  >ctrl</button>
+			//
+			<button class='ctrlBtn' data-action="phase"	data-arg="names" >names</button>
+			<button class='ctrlBtn' data-action="ctrl" >ctrl</button>
+			//
 			<button class='ctrlBtn' data-action="phase"	data-arg="winner"  id="winner-btn" >winner</button>
 			<button class='ctrlBtn' data-action="phase"	data-arg="fakeshot">fakeshot</button>
 			<button class='ctrlBtn' data-action="realshot">realshot</button>
@@ -66,6 +71,10 @@
 			<input type="text" id="namenem" /><button id="nameok">ok</button>
 		</div>
 
+		<!-- EXIT -->
+		<div class="content widget widget-exit">
+			<div class="exit">&#10006</div>
+		</div>
 
 		<!-- INTRO -->
 		<div class="content widget widget-intro">
@@ -90,9 +99,8 @@
 
 		<!-- LIVE -->
 		<div class="content widget widget-live">
-			<div id="textzone"> KOMPLEX KAPHARNAUM THEATRE </div>
+			<div id="textzone"> KompleX KapharnaüM : visio-conférence </div>
 			<video id="red5pro-subscriber" class="red5pro-media red5pro-media-background" autoplay></video>
-			
 		</div>
 
 
@@ -103,6 +111,11 @@
 			<img src="/img/space.gif" id="space-gif" />
 		</div>
 
+		<!-- NAMES -->
+		<div class="content widget widget-names">
+			<div class="names-container"></div>
+		</div>
+
 		<!-- CTRL -->
 		<div class="content widget widget-ctrl">
 			<img src="/img/ctrl.gif" id="ctrl-gif" />
@@ -111,7 +124,8 @@
 		<!-- WINNER -->
 		<div class="content widget widget-winner">
 			<div class="winneroverlay">
-				<span class="thewinner"></span> a pris la décision.
+				<span class="thewinner"></span> a décidé
+				<span class="winner2"><br>l'arrêt.</span>
 			</div>
 		</div>
 
@@ -128,9 +142,9 @@
 				<br />
 				<br />
 				<br />
-				<br />
-				<br />
-				Merci et à bientôt !
+				La visio-conférence est terminée.<br /><br />
+				 à bientôt !<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+				<img class="intrologo" src="/img/kxkm.png" />
 			</div>
 		</div>
 
