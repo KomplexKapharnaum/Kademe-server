@@ -2,7 +2,7 @@ var FULLSCREEN = true
 var allowUnload = false
 
 var isElectron = navigator.userAgent.toLowerCase().indexOf('electron/') > -1
-var myName = '' //Cookies.get('name')
+var myName = Cookies.get('name')
 
 var gaugeMax = 8
 var gauge = gaugeMax
@@ -508,14 +508,14 @@ $(function() {
     socket.on('allNames', (data) => {
         console.log('allNames received: ', data)
         allNames = data
-        for(n of allNames) toastr.success(n+' est en ligne')
+        for(n of allNames) toastr.success('est en ligne', n)
 
     })
 
     socket.on('newName', (data) => {
         console.log('newName received: ', data)
         allNames.push(data)
-        toastr.success(data+' a rejoint le groupe')
+        toastr.success('a rejoint le groupe', data)
     })
 
     socket.on('goneName', (data) => {
@@ -525,7 +525,7 @@ $(function() {
         var index = allNames.indexOf(data);
         if (index > -1) allNames.splice(index, 1);
         console.log(allNames)
-        toastr.error(data+' n\'est plus en ligne')
+        toastr.error('n\'est plus en ligne', data)
     })
 
 
@@ -589,8 +589,8 @@ $(function() {
             });
             subscriber.init({
                 protocol: 'wss',
-                port: 443,
-                host: 'kademe.kxkm.net',
+                port: 5443,
+                host: location.hostname,
                 app: 'live',
                 streamName: 'stream1',
                 rtcConfiguration: {
