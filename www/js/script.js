@@ -2,7 +2,7 @@ var FULLSCREEN = true
 var allowUnload = false
 
 var isElectron = navigator.userAgent.toLowerCase().indexOf('electron/') > -1
-var myName = Cookies.get('name')
+var myName = '' //Cookies.get('name')
 
 var gaugeMax = 8
 var gauge = gaugeMax
@@ -50,17 +50,38 @@ $(function() {
         ipcRenderer.on('devmode', (event, arg) => {
             console.log('devmode');
         })
-    }
-    else console.log('running outside Electron');
 
-    // Prevent Closing (Alt+F4)
-    //
-    if (FULLSCREEN) window.onbeforeunload = (e) => { if (!allowUnload) e.returnValue = false; };
-    
+        $('.fs').hide()
+        $('.exit').hide()
+    }
+    else {
+        console.log('running outside Electron');
+
+        $('.fs').show()
+        $('.exit').hide()
+    }
+
     // Devmode
     document.onkeyup = function(e) {
-       if (e.ctrlKey && e.altKey && e.shiftKey  && e.which == 75) $(".controls").show()
+       if (e.ctrlKey && e.altKey && e.shiftKey  && e.which == 75 && myName.startsWith('Dick Cheney')) $(".controls").show()
     };
+
+
+    // Set FULLSCREEN
+    function goFullscreen() {
+        // Prevent Closing (Alt+F4)
+        window.onbeforeunload = (e) => { if (!allowUnload) e.returnValue = false; };
+
+        document.body.requestFullscreen();
+        window.addEventListener("orientationchange", function() {
+            document.body.requestFullscreen();
+        }, false);
+
+        if (isElectron) ipcRenderer.sendSync('fullscreen')
+
+        $('.fs').hide()
+        $('.exit').show()
+    }
 
     // Get Name
     //
@@ -69,12 +90,7 @@ $(function() {
         socket.emit('iam', myName)  
 
         // Fullscreen
-        if (FULLSCREEN) {
-            document.body.requestFullscreen();
-            window.addEventListener("orientationchange", function() {
-                document.body.requestFullscreen();
-            }, false);
-        }
+        if (FULLSCREEN) goFullscreen()
 
         $('#red5pro-subscriber').muted = false;
     }
@@ -168,18 +184,25 @@ $(function() {
 
     $('.exit').on('click', ()=>{
         if (isElectron) ipcRenderer.sendSync('quit')
-        else document.exitFullscreen();
+        else {
+            document.exitFullscreen();
+            $('.fs').show()
+            $('.exit').hide()
+        }
     })
+
+    $('.fs').on('click', goFullscreen)
 
     // Add names ?
     function pushName() {
         namesCount += 1
         name = allNames[Math.floor(Math.random() * allNames.length)]
-        if (namesCount == 0) $('.names-container').html('&lt;id=who data=" <span class="namename">Qui décide</span> "&gt;<br />')
-        else if (namesCount < 10) $('.names-container').append('&nbsp;&nbsp;&nbsp;&nbsp;&lt;src=" <span class="namename">'+name+'</span> ? "&gt;<br />')
-        else if (namesCount == 10) $('.names-container').append('<br >&lt;const="<span class="namename"> '+allNames.length+' participants.</span> "&gt;<br />')
-        else if (namesCount == 11) $('.names-container').append('&lt;const="<span class="namename"> Un seul décide.</span> "&gt;<br />')
-        else if (namesCount > 13) namesCount = -1
+        if (namesCount == 0) $('.names-container').html('&lt;id=who data=" <span class="namename">Qui décide ?</span> "&gt;<br />')
+        else if (namesCount == 1) $('.names-container').append('&lt;const="<span class="namename"> '+allNames.length+' participants.</span> "&gt;<br />')
+        else if (namesCount == 2) $('.names-container').append('&lt;const="<span class="namename"> Un seul décide.</span> "&gt;<br /><br >')
+        
+        else if (namesCount < 12) $('.names-container').append('&nbsp;&nbsp;&nbsp;&nbsp;&lt;src=" <span class="namename">'+name+'</span> ? "&gt;<br />')
+        else if (namesCount > 14) namesCount = -1
     }
 
     setInterval(pushName, 434)
@@ -193,10 +216,13 @@ $(function() {
         //
         name: () => 
         {   
+            $("#red5pro-subscriber").prop('muted', true)
+
             // Show
             $('.widget').hide()
             $('.widget-name').show()
             $('.widget-exit').show()
+            $('.widget-fs').show()
 
             // Validate name
             //
@@ -224,6 +250,8 @@ $(function() {
             $('.widget').hide()
             $('.widget-intro').show()
             $('.widget-exit').show()
+            $('.widget-fs').show()
+
         },
 
         // Live
@@ -235,6 +263,21 @@ $(function() {
             $('.widget').hide()
             $('.widget-live').show()
             $('.widget-exit').show()
+            $('.widget-fs').show()
+            $("#red5pro-subscriber").prop('muted', false)
+        },
+
+        // Test
+        //
+        test: () => 
+        {
+            if (!myName.startsWith('Dick')) return;
+
+            // Show
+            $('.widget').hide()
+            $('.widget-live').show()
+            $('.widget-exit').show()
+            $('.widget-fs').show()
             $("#red5pro-subscriber").prop('muted', false)
         },
 
@@ -362,13 +405,13 @@ $(function() {
         {    
             $('.widget').hide()
             $('.widget-live').show()
-            $("#red5pro-subscriber").prop('muted', false)
+            $("#red5pro-subscriber").prop('muted', true)
             $('.widget-winner').show()
             $('.thewinner').html(from)
             $('.winner2').hide()
             setTimeout(()=>{
                 $('.winner2').show()
-            },2000)
+            },4000)
         },
 
         // Shutdown
@@ -476,8 +519,9 @@ $(function() {
     })
 
     socket.on('goneName', (data) => {
-        console.log('goneName received: ', data)
-        console.log(allNames, )
+        if (!data) return
+        //console.log('goneName received: ', data)
+        //console.log(allNames, )
         var index = allNames.indexOf(data);
         if (index > -1) allNames.splice(index, 1);
         console.log(allNames)

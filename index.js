@@ -37,6 +37,8 @@ io.on('connection', function(client)
     io.emit('newName', name)
 
     console.log('cli introduced as', name)
+    console.log('number of cli: ', book.length)
+    console.log('cli list: ', book) 
   })
   
   // Client exit: remove from book and inform others
