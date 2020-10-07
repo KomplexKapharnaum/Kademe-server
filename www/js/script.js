@@ -3,6 +3,7 @@ var allowUnload = false
 
 var isElectron = navigator.userAgent.toLowerCase().indexOf('electron/') > -1
 var myName = Cookies.get('name')
+var noSleep = new NoSleep()
 
 var gaugeMax = 8
 var gauge = gaugeMax
@@ -23,17 +24,50 @@ toastr.options = {
     "newestOnTop": true,
     "progressBar": false,
     "positionClass": "toast-top-left",
-    "preventDuplicates": false,
+    "preventDuplicates": true,
     "onclick": null,
     "showDuration": "300",
     "hideDuration": "500",
-    "timeOut": "3000",
+    "timeOut": "2500",
     "extendedTimeOut": "1000",
     "showEasing": "swing",
     "hideEasing": "linear",
     "showMethod": "fadeIn",
     "hideMethod": "fadeOut"
 }
+
+/* View in fullscreen */
+function openFullscreen() {
+    var elem = document.documentElement;
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+    } else if (elem.mozRequestFullScreen) { /* Firefox */
+      elem.mozRequestFullScreen();
+    } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+      elem.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) { /* IE/Edge */
+      elem.msRequestFullscreen();
+    }
+  }
+  
+  /* Close fullscreen */
+  function closeFullscreen() {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.mozCancelFullScreen) { /* Firefox */
+      document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+      document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) { /* IE/Edge */
+      document.msExitFullscreen();
+    }
+  }
+
+function hideKeyboard() { 
+    document.activeElement.blur();
+	$("input").blur();
+};
+
 
 //
 //  Run
@@ -63,7 +97,8 @@ $(function() {
 
     // Devmode
     document.onkeyup = function(e) {
-       if (e.ctrlKey && e.altKey && e.shiftKey  && e.which == 75 && myName.startsWith('Dick Cheney')) $(".controls").show()
+       if (e.ctrlKey && e.altKey && e.key == 'K' /*&& myName.startsWith('Dick Cheney')*/) 
+        $(".controls").show()
     };
 
 
@@ -71,10 +106,10 @@ $(function() {
     function goFullscreen() {
         // Prevent Closing (Alt+F4)
         window.onbeforeunload = (e) => { if (!allowUnload) e.returnValue = false; };
-
-        document.body.requestFullscreen();
+        noSleep.enable();
+        openFullscreen()
         window.addEventListener("orientationchange", function() {
-            document.body.requestFullscreen();
+            openFullscreen()
         }, false);
 
         if (isElectron) ipcRenderer.sendSync('fullscreen')
@@ -83,10 +118,17 @@ $(function() {
         $('.exit').show()
     }
 
+    // Welcome
+    //
+    $('#accept-welcome').on('click touchend', ()=>{
+        introduceMe()
+        $("#red5pro-subscriber").play()
+        goFullscreen()
+    })    
+
     // Get Name
     //
     function introduceMe() {
-        $('.namedisplay').html(myName)
         socket.emit('iam', myName)  
 
         // Fullscreen
@@ -174,24 +216,38 @@ $(function() {
     $(document).keyup(function(event) { 
         if(event.keyCode == 32 && gaugeSpace) spaceBar()
         
-        else if (isElectron && event.keyCode == 17 && $(".widget-ctrl").is(":visible")) {
+        else if (event.keyCode == 17 && $(".widget-ctrl").is(":visible")) {
             $('#winner-btn').click()
         }
+
+        // console.warn(event.code )
 
         event.preventDefault();
         return false;
     }); 
 
-    $('.exit').on('click', ()=>{
+    $('.spaceoverlay').on('touchend', ()=>{
+        if(gaugeSpace) spaceBar()
+    })
+
+    $(document).on('touchend', ()=>{
+        $("#red5pro-subscriber").play()
+        goFullscreen()
+    })
+
+    $('.exit').on('click touchend', (event)=>{
+        console.log('exit')
         if (isElectron) ipcRenderer.sendSync('quit')
         else {
-            document.exitFullscreen();
+            closeFullscreen();
             $('.fs').show()
             $('.exit').hide()
         }
+        event.preventDefault();
+        return false;
     })
 
-    $('.fs').on('click', goFullscreen)
+    $('.fs').on('click touchend', goFullscreen)
 
     // Add names ?
     function pushName() {
@@ -228,16 +284,33 @@ $(function() {
             //
             $('#nameok').unbind().on('click touchend', () => 
             {
+                hideKeyboard()
                 var newname = $('#namenem').val().trim()
                 if (newname != '') {
                     myName = newname
                     Cookies.set('name', myName)
-                    introduceMe()
+                    
+                    $('.namedisplay').html(myName)
+                    kontroller['welcome']()
                 }
             })
             $('#namenem').unbind().keyup(function(e){
                 if(e.keyCode == 13) $('#nameok').click()
             });
+        },
+
+        // Welcome
+        //
+        welcome: () => 
+        {
+            $("#red5pro-subscriber").prop('muted', true)
+            // Show
+            $('.widget').hide()
+            $('.widget-welcome').show()
+            $('.widget-exit').show()
+            $('.widget-fs').show()
+
+                    
         },
 
         // Intro
@@ -258,20 +331,20 @@ $(function() {
         //
         live: () => 
         {
-            
+            $("#red5pro-subscriber").prop('muted', false)
+
             // Show
             $('.widget').hide()
             $('.widget-live').show()
             $('.widget-exit').show()
             $('.widget-fs').show()
-            $("#red5pro-subscriber").prop('muted', false)
         },
 
         // Test
         //
         test: () => 
         {
-            if (!myName.startsWith('Dick')) return;
+            if (!$(".controls").is(":visible")) return;
 
             // Show
             $('.widget').hide()
@@ -293,10 +366,11 @@ $(function() {
             gaugeSpace = true
             normalGauge()
 
+            $("#red5pro-subscriber").prop('muted', false)
+
             // Show
             $('.widget').hide()
             $('.widget-live').show()
-            $("#red5pro-subscriber").prop('muted', false)
             $('.widget-space').show()
         },
 
@@ -311,10 +385,11 @@ $(function() {
             gaugeSpace = true
             normalGauge()
 
+            $("#red5pro-subscriber").prop('muted', false)
+
             // Show
             $('.widget').hide()
             $('.widget-live').show()
-            $("#red5pro-subscriber").prop('muted', false)
             $('.widget-space').show()
         },
 
@@ -328,10 +403,11 @@ $(function() {
             gaugeSpace = false
             normalGauge()
 
+            $("#red5pro-subscriber").prop('muted', false)
+
             // Show
             $('.widget').hide()
             $('.widget-live').show()
-            $("#red5pro-subscriber").prop('muted', false)
             $('.widget-space').show()
         },
 
@@ -343,10 +419,11 @@ $(function() {
             gaugeSpace = false
             gauge = gaugeMax
 
+            $("#red5pro-subscriber").prop('muted', false)
+
             // Show
             $('.widget').hide()
             $('.widget-live').show()
-            $("#red5pro-subscriber").prop('muted', false)
         },
 
         // Refill
@@ -358,11 +435,12 @@ $(function() {
             applyGauge()
             gauge -= 1
             if (gauge < 0) gauge = 0
+            
+            $("#red5pro-subscriber").prop('muted', false)
 
             // Show
             $('.widget').hide()
             $('.widget-live').show()
-            $("#red5pro-subscriber").prop('muted', false)
             $('.widget-space').show()
         },
 
@@ -372,10 +450,11 @@ $(function() {
         {
             freakGauge()
 
+            $("#red5pro-subscriber").prop('muted', false)
+
             // Show
             $('.widget').hide()
             $('.widget-live').show()
-            $("#red5pro-subscriber").prop('muted', false)
             $('.widget-space').show()
         },
 
@@ -383,9 +462,10 @@ $(function() {
         //
         names: () => 
         {    
+            $("#red5pro-subscriber").prop('muted', false)
+
             $('.widget').hide()
             $('.widget-live').show()
-            $("#red5pro-subscriber").prop('muted', false)
 
             $('.names-container').html(" ")
             namesCount = -1            
@@ -403,9 +483,10 @@ $(function() {
         //
         winner: (from) => 
         {    
+            $("#red5pro-subscriber").prop('muted', true)
+
             $('.widget').hide()
             $('.widget-live').show()
-            $("#red5pro-subscriber").prop('muted', true)
             $('.widget-winner').show()
             $('.thewinner').html(from)
             $('.winner2').hide()
@@ -418,8 +499,9 @@ $(function() {
         //
         fakeshot: () =>
         {
-            console.log('fakeshot')
             $("#red5pro-subscriber").prop('muted', true)
+
+            console.log('fakeshot')
 
             // fake shutdown
             $('.widget').hide()
@@ -433,6 +515,8 @@ $(function() {
         {   
             console.log('realshot')
             $("#red5pro-subscriber").prop('muted', true)
+
+            $('.widget').hide()
 
             // real shutdown
             if (isElectron) {
@@ -453,7 +537,7 @@ $(function() {
             allowUnload = true
 
             if (isElectron) setTimeout(() => { ipcRenderer.sendSync('quit') }, 4000)
-            else document.exitFullscreen();
+            else closeFullscreen()
             
         },
 
@@ -492,8 +576,11 @@ $(function() {
         if (myName == undefined || myName == '') {
             kontroller['name']()
         }
-        // Name ok: declare to server
-        else introduceMe()
+        // Name ok: welcome
+        else {
+            $('.namedisplay').html(myName)
+            kontroller['welcome']()
+        }
     }); 
     
     // Receive Cmd => call action
@@ -508,6 +595,7 @@ $(function() {
     socket.on('allNames', (data) => {
         console.log('allNames received: ', data)
         allNames = data
+        if (!$('.widget-intro').is(":visible")) return;
         for(n of allNames) toastr.success('est en ligne', n)
 
     })
@@ -515,6 +603,7 @@ $(function() {
     socket.on('newName', (data) => {
         console.log('newName received: ', data)
         allNames.push(data)
+        if (!$('.widget-intro').is(":visible")) return;
         toastr.success('a rejoint le groupe', data)
     })
 
@@ -525,6 +614,7 @@ $(function() {
         var index = allNames.indexOf(data);
         if (index > -1) allNames.splice(index, 1);
         console.log(allNames)
+        if (!$('.widget-intro').is(":visible")) return;
         toastr.error('n\'est plus en ligne', data)
     })
 

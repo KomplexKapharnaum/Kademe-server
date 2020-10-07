@@ -17,7 +17,7 @@
 		<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
 		<script src="//cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
-
+		<script src="/js/nosleep.min.js"></script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
 
@@ -28,6 +28,7 @@
 		
 		<!-- Electron compat:  Insert this line after script imports -->
 		<script>if (window.module) module = window.module;</script>
+		
 		
 	</head>
 
@@ -64,7 +65,13 @@
 		
 		<div class="namescreen widget widget-name">
 			VOTRE NOM<br />
-			<input type="text" id="namenem" /><button id="nameok">ok</button>
+			<input type="text" id="namenem" placeholder="Jean Dupont - CNRS" /><button id="nameok">ok</button><br /><br />
+			<em>Merci de saisir vos prénom,<br />nom et entreprise !</em><br /><br />
+		</div>
+
+		<div class="namescreen widget widget-welcome" id="accept-welcome">
+			Bienvenue<br /><span class="namedisplay"></span>!<br /><br />
+			Cliquez ici pour accéder<br />à la visio-conférence...
 		</div>
 
 		<!-- EXIT -->
@@ -82,9 +89,10 @@
 				<br />
 				Bonjour <span class="namedisplay"></span>,<br />
 				<br />
-				Aujourd'hui à 17H retrouvez <br />
+				Aujourd'hui à 14H20 retrouvez <br />
 				Stéphane Bonnard,<br />
-				co-directeur artistique de  <img class="intrologo" src="/img/kxkm.png" /><br />
+				co-directeur artistique <br /><br />
+				<img class="intrologo" src="/img/kxkm.png" /><br />
 				<br />
 				avec le projet :<br />
 				<span class="introtitle">Une architecture du soleil</span>
@@ -99,7 +107,7 @@
 		<!-- LIVE -->
 		<div class="content widget widget-live">
 			<div id="textzone"> KompleX KapharnaüM : visio-conférence </div>
-			<video id="red5pro-subscriber" class="red5pro-media red5pro-media-background" autoplay></video>
+			<video id="red5pro-subscriber" class="red5pro-media red5pro-media-background" autoplay loop muted playsinline></video>
 		</div>
 
 
@@ -142,7 +150,7 @@
 				<br />
 				<br />
 				La visio-conférence est terminée.<br /><br />
-				 à bientôt !<br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
+				 à bientôt !<br /><br /><br /><br /><br /><br /><br />
 				<img class="intrologo" src="/img/kxkm.png" />
 			</div>
 		</div>

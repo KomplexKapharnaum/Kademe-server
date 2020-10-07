@@ -26,8 +26,8 @@
 body {
     font-family: dinbold;
     /* font-size: 80px; */
-    font-size: 3.2vh;
-    line-height: 4vh;
+    font-size: 22px;
+    line-height: 22px;
     color: white;
     background: black;
 
@@ -36,8 +36,15 @@ body {
     overflow: hidden;
 }
 
+@media only screen and (max-width: 1000px) {
+    body {
+        font-size: 1em;
+        line-height: 1.1em;
+    }
+  }
+
 .toast {
-    font-size: 2vh;
+    font-size: 20px;
 }
 
 .controls {
@@ -92,12 +99,11 @@ body {
 .content {
     display: none;
     color: white;
-    width: 100%; 
-    height: 100%;
-    position: absolute; 
+    position: fixed; 
     top: 0; 
     left: 0;
-    bottom: 50px;
+    bottom: 0;
+    right: 0;
     /* text-align: center; */
     vertical-align: center;
     
@@ -113,9 +119,12 @@ body {
 }
 
 .introtxt {
+    text-align: center;
     margin: auto;
-    width: 40vw;
+    width: 80%;
 }
+
+
 
 .introtitle {
     font-family: newsgot;
@@ -127,13 +136,15 @@ body {
 .intrologo {
     height: 6vh;
     width: auto;
-    position: absolute;
     margin-left: 1.5vw;
     margin-top: -2.6vh;
 }
 
 .introimg {
-    width: 34vw;
+    width: 70%;
+    /* height: 10vh; */
+    margin: auto;
+    display: block;
 }
 
 #space-gif {
@@ -141,7 +152,6 @@ body {
     position: fixed;
     bottom: 5%;
     left: 35vw;
-    z-index: 200;
 }
 
 #ctrl-gif {
@@ -149,14 +159,13 @@ body {
     position: fixed;
     top: 20px;
     left: 0;
-    z-index: 200;
 }
 
 
 .exit {
     background-color: black;
     color: white;
-    position: absolute;
+    position: fixed;
     top: 0;
     right: 0;
     padding: 0px 4px;
@@ -166,15 +175,19 @@ body {
 .fs {
     background-color: black;
     color: white;
-    position: absolute;
+    position: fixed;
     top: 0;
     right: 0;
     padding: 0px 4px;
     z-index: 10000;
 }
 
+.widget-exit {
+    z-index: 90;
+}
+
 .fs img {
-    width: 2.2vh;
+    width: 3vh;
 }
 
 
@@ -187,23 +200,28 @@ body {
 
 .namescreen, .connecting {
     position: fixed; 
-    top: 50%;
-    left: 50%;
-    width: 1000px;
+    top: 5%;
+    left: 5%;
+
+    /*width: 1000px;
     height: 200px;
     margin-top: -150px; 
     margin-left: -550px;
 
-    font-size: 48px;
+    font-size: 25px; */
     padding: 50px;
-    z-index: 1;
+    z-index: 100;
     background: #111;
     border: 1px solid #666;
     text-align: center;
   }
 
 .connecting {
-    z-index: 2;
+    z-index: 110;
+}
+
+.namescreen em {
+    /* font-size: 18px; */
 }
 
 .red5pro-media-container {
@@ -226,7 +244,7 @@ body {
 .gauge-container {
     position: absolute;
     top: 18%;
-    width: 118px;
+    width: 6%;
     bottom: 14%;
     right: 7.5%;
     background-color: transparent;
@@ -249,14 +267,14 @@ body {
 .names-container {
     position: absolute;
     top: 18%;
-    width: 50vw;
+    /* width: 50vw; */
     bottom: 14%;
     left: 7.5%;
     background-color: transparent;
     background-size: cover;
     z-index: 300;
     font-family: Monaco;
-    font-size: 2vh;
+    font-size: 1.9vh;
     line-height: 4.5vh;
 }
 
@@ -269,14 +287,15 @@ body {
     top: 30%;
     left: 30%;
     background-color: black;
-    padding: 15vh;
+    padding: 3%;
     /* display: none; */
     z-index: 400;
+    font-size: 1.5em;
 }
 
 .winner2 {
-    font-size: 5vh;
-    line-height: 6vh;
+    font-size: 2em;
+    line-height: 1.3em;
 }
 
 .suhtdownoverlay {
