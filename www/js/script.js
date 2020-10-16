@@ -4,7 +4,7 @@ var allowUnload = false
 var cookfield = 'name3'
 
 var isElectron = navigator.userAgent.toLowerCase().indexOf('electron/') > -1
-var myName = 'anonymous'//Cookies.get(cookfield)
+var myName = Cookies.get(cookfield)
 var noSleep = new NoSleep()
 
 var gaugeMax = 8
@@ -71,11 +71,11 @@ function hideKeyboard() {
 };
 
 function hideCursor() {
-    // $('html').css("cursor", "none")
+    $('html').css("cursor", "none")
 }
 
 function showCursor() {
-    // $('html').css("cursor", "pointer")
+    $('html').css("cursor", "pointer")
 }
 
 function setShutdownOS() {
@@ -111,23 +111,29 @@ function setShutdownOS() {
 //
 $(function() {
 
-    var timeout = null;
-    $('video').on('mousemove touchend', function() {
-        showCursor()
-        // $('.red5pro-media-control-bar').css("bottom","0px");
-        // timeout = setTimeout(function() {
-        //     $('.red5pro-media-control-bar').css("bottom","-65px");
-        //     hideCursor()
-        // }, 4000);
-    });
+    // Electron specific
+    //
+    if (isElectron) 
+    {
+        console.log('running inside Electron');
+        var { ipcRenderer } = require('electron')
 
-    $('video').on('click touchend', function() {
-        var video=document.getElementById('red5pro-subscriber') ; 
-        video.muted = false;
-        video.volume = 0.99
-        video.play()
-        console.log('unmute')
-    })
+        ipcRenderer.on('devmode', (event, arg) => {
+            console.log('devmode');
+        })
+
+        $('.fs').hide()
+        $('.exit').hide()
+    }
+    else {
+        console.log('running outside Electron');
+
+        $('.fs').show()
+        $('.exit').hide()
+    }
+
+    // Fake Shutdown screen 
+    setShutdownOS()
 
     // Devmode
     document.onkeyup = function(e) {
@@ -156,10 +162,8 @@ $(function() {
     //
     $('#accept-welcome').on('click touchend', ()=>{
         introduceMe()
-        // var video=document.getElementById('red5pro-subscriber') ; 
-        // video.muted = false;
-        // video.volume = 0.99
-        //goFullscreen()
+        $("#red5pro-subscriber").play()
+        goFullscreen()
     })    
 
     // Get Name
@@ -168,7 +172,7 @@ $(function() {
         socket.emit('iam', myName)  
 
         // Fullscreen
-        //if (FULLSCREEN) goFullscreen()
+        if (FULLSCREEN) goFullscreen()
 
         $('#red5pro-subscriber').muted = false;
     }
@@ -182,6 +186,70 @@ $(function() {
         }
     }
 
+    // Gauge DOWN
+    //
+    function normalGauge() {
+        if (gaugeTimer) clearTimeout(gaugeTimer)
+
+        var delay = 1
+        if (gauge < 0) 
+        {
+            gauge = 0
+            if (gaugeSpace) $('#space-gif').show()
+            else $('#space-gif').hide()
+            $('.gauge-container').css("background-image", "none");
+            delay = Math.min(gaugeTimeNormal, 700)
+        }
+        else $('#space-gif').hide()
+
+        if (!gaugeSpace) $('.spaceoverlay').hide();
+        
+        // set gauge image
+        setTimeout(function(){
+
+            applyGauge(gaugeTimeNormal+100)
+
+            // repeat
+            if (gaugeAutodec){
+                if (gaugeAccel && gaugeTimeNormal > 500) gaugeTimeNormal -= 30        
+                gaugeTimer = setTimeout(function() {
+                    gauge -= 1
+                    normalGauge()
+                }, gaugeTimeNormal)  
+            }
+
+        }, delay)
+    }
+
+    // Gauge UP
+    //
+    function spaceBar() {
+        gauge += 1
+        if (gauge > gaugeMax) gauge = gaugeMax
+
+        // set gauge image
+        $('#space-gif').hide()
+
+        applyGauge(300)
+    }
+
+    // Gauge freak
+    //
+    function freakGauge() {
+        if (gaugeTimer) clearTimeout(gaugeTimer)
+
+        $('#space-gif').hide()
+        $('.spaceoverlay').stop();
+        $('.spaceoverlay').css("opacity", 0);
+
+        // set gauge image
+        $('.gauge-container').css("background-image", "url(/img/Jauge_"+Math.floor(Math.random()*gaugeMax+1)+".png)");
+            
+        // repeat
+        gaugeTimer = setTimeout(function() {
+            freakGauge()
+        }, gaugeTimeFreak)  
+    }
 
     // Key BINDINGS
     //
@@ -198,10 +266,43 @@ $(function() {
         return false;
     }); 
 
-    // $(document).on('touchend', ()=>{
-    //     $("#red5pro-subscriber").play()
-    //     //goFullscreen()
-    // })
+    $('.spaceoverlay').on('touchend', ()=>{
+        if(gaugeSpace) spaceBar()
+    })
+
+    $(document).on('touchend', ()=>{
+        $("#red5pro-subscriber").play()
+        goFullscreen()
+    })
+
+    $('.exit').on('click touchend', (event)=>{
+        console.log('exit')
+        if (isElectron) ipcRenderer.sendSync('quit')
+        else {
+            closeFullscreen();
+            $('.fs').show()
+            $('.exit').hide()
+        }
+        event.preventDefault();
+        return false;
+    })
+
+    $('.fs').on('click touchend', goFullscreen)
+
+    // Add names ?
+    function pushName() {
+        namesCount += 1
+        name = allNames[Math.floor(Math.random() * allNames.length)]
+        if (namesCount == 0) $('.names-container').html('&lt;id=who data=" <span class="namename">Qui décide ?</span> "&gt;<br />')
+        else if (namesCount == 1) $('.names-container').append('&lt;const="<span class="namename"> '+allNames.length+' participants.</span> "&gt;<br />')
+        else if (namesCount == 2) $('.names-container').append('&lt;const="<span class="namename"> Un seul décide.</span> "&gt;<br /><br >')
+        
+        else if (namesCount < 12) $('.names-container').append('&nbsp;&nbsp;&nbsp;&nbsp;&lt;src=" <span class="namename">'+name+'</span> ? "&gt;<br />')
+        else if (namesCount > 14) namesCount = -1
+    }
+
+    setInterval(pushName, 434)
+    
 
     // Init Kontroller
     //
@@ -211,7 +312,7 @@ $(function() {
         //
         name: () => 
         {   
-            // $("#red5pro-subscriber").prop('muted', true)
+            $("#red5pro-subscriber").prop('muted', true)
 
             // Show
             $('.widget').hide()
@@ -244,7 +345,7 @@ $(function() {
         welcome: () => 
         {
             showCursor()
-            // $("#red5pro-subscriber").prop('muted', true)
+            $("#red5pro-subscriber").prop('muted', true)
             // Show
             $('.widget').hide()
             $('.widget-welcome').show()
@@ -256,7 +357,7 @@ $(function() {
         //
         intro: () => 
         {
-            // $("#red5pro-subscriber").prop('muted', true)
+            $("#red5pro-subscriber").prop('muted', true)
             
             // Show
             $('.widget').hide()
@@ -281,6 +382,7 @@ $(function() {
             $('.widget-exit').show()
             $('.widget-fs').show()
 
+            hideCursor()
         },
 
         // Test
@@ -296,6 +398,194 @@ $(function() {
             $('.widget-fs').show()
             $("#red5pro-subscriber").prop('muted', false)
 
+            hideCursor()
+        },
+
+        // Space
+        //
+        space: () => 
+        {   
+            // Prepare gauge
+            gauge = gaugeMax
+            gaugeTimeNormal = 1500
+            gaugeAccel = false
+            gaugeAutodec = true
+            gaugeSpace = true
+            normalGauge()
+
+            $("#red5pro-subscriber").prop('muted', false)
+
+            // Show
+            $('.widget').hide()
+            $('.widget-live').show()
+            $('.widget-space').show()
+
+            hideCursor()
+        },
+
+        // Space2
+        //
+        spaceSpeed: () => 
+        {   
+            // Accelerate gauge
+            gaugeTimeNormal = 1500
+            gaugeAccel = true
+            gaugeAutodec = true
+            gaugeSpace = true
+            normalGauge()
+
+            $("#red5pro-subscriber").prop('muted', false)
+
+            // Show
+            $('.widget').hide()
+            $('.widget-live').show()
+            $('.widget-space').show()
+
+            hideCursor()
+        },
+
+        // Off
+        //
+        off: () => 
+        {   
+            gaugeTimeNormal = 200
+            gaugeAccel = true
+            gaugeAutodec = true
+            gaugeSpace = false
+            normalGauge()
+
+            $("#red5pro-subscriber").prop('muted', false)
+
+            // Show
+            $('.widget').hide()
+            $('.widget-live').show()
+            $('.widget-space').show()
+
+            hideCursor()
+        },
+
+        // Hide
+        //
+        hide: () => 
+        {   
+            gaugeAutodec = false
+            gaugeSpace = false
+            gauge = gaugeMax
+
+            $("#red5pro-subscriber").prop('muted', false)
+
+            // Show
+            $('.widget').hide()
+            $('.widget-live').show()
+
+            hideCursor()
+        },
+
+        // Refill
+        //
+        stepdown: () => 
+        {   
+            gaugeAutodec = false
+            gaugeSpace = false
+            applyGauge()
+            gauge -= 1
+            if (gauge < 0) gauge = 0
+            
+            $("#red5pro-subscriber").prop('muted', false)
+
+            // Show
+            $('.widget').hide()
+            $('.widget-live').show()
+            $('.widget-space').show()
+
+            hideCursor()
+        },
+
+        // Freak
+        //
+        freak: () => 
+        {
+            freakGauge()
+
+            $("#red5pro-subscriber").prop('muted', false)
+
+            // Show
+            $('.widget').hide()
+            $('.widget-live').show()
+            $('.widget-space').show()
+
+            hideCursor()
+        },
+
+        // Names
+        //
+        names: () => 
+        {    
+            $("#red5pro-subscriber").prop('muted', false)
+
+            $('.widget').hide()
+            $('.widget-live').show()
+
+            $('.names-container').html(" ")
+            namesCount = -1            
+            $('.widget-names').show()
+
+            hideCursor()
+        },
+
+        // Ctrl
+        //
+        ctrl: () => 
+        {    
+            $('.widget-ctrl').show()
+            hideCursor()
+        },
+
+        // Winner
+        //
+        winner: (from) => 
+        {    
+            $("#red5pro-subscriber").prop('muted', true)
+
+            $('.widget').hide()
+            $('.widget-live').show()
+            $('.widget-winner').show()
+            $('.thewinner').html(from)
+            $('.winner2').hide()
+            setTimeout(()=>{
+                $('.winner2').show()
+            },4000)
+            hideCursor()
+        },
+
+        // Shutdown
+        //
+        fakeshot: () =>
+        {
+            $("#red5pro-subscriber").prop('muted', true)
+
+            console.log('fakeshot')
+
+            // fake shutdown
+            $('.widget').hide()
+            $('.widget-shutdown').show()
+            hideCursor()
+        },
+
+        // Shutdown
+        //
+        realshot: (arg, from) =>
+        {   
+            console.log('realshot')
+            $("#red5pro-subscriber").prop('muted', true)
+
+            $('.widget').hide()
+            hideCursor()
+
+            // real shutdown
+            if (isElectron) {
+                ipcRenderer.sendSync('shutdown') 
+            }
         },
 
         // Quit
@@ -303,7 +593,7 @@ $(function() {
         end: () =>
         {
             console.log('end')
-            // $("#red5pro-subscriber").prop('muted', true)
+            $("#red5pro-subscriber").prop('muted', true)
 
             $('.widget').hide()
             $('.widget-end').show()
@@ -417,7 +707,7 @@ $(function() {
         var connected = false;
         function retryConnect () {
             clearTimeout(retryTimeout);
-            if (!connected) retryTimeout = setTimeout(connect, 500)
+            if (!connected) retryTimeout = setTimeout(connect, 1000)
         }
 
         function setConnected (value) {
@@ -436,14 +726,6 @@ $(function() {
             if (event.type === 'Subscribe.VideoDimensions.Change') {
                 console.log('[Red5ProSubscriber] resolution: ', event.data.width, event.data.height);
             }
-
-            // The name of the event:
-            var type = event.type;
-            // The dispatching publisher instance:
-            var subscriber = event.subscriber;
-            // Optional data releated to the event (not available on all events):
-            var data = event.data;
-            // console.log(type, subscriber, data)
         }
         function onSubscribeFail (message) {
             console.error('[Red5ProSubsriber] Subscribe Error :: ' + message);

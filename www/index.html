@@ -1,163 +1,169 @@
+<!DOCTYPE html>
+<html lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="x-ua-compatible" content="ie=edge" />
+		<meta name="viewport" content="width=device-width">
+		<meta name="viewport" content="initial-scale=1.0">
 
+		<title>KXKM Live</title> 
 
+		<link rel="stylesheet" type="text/css" href="/css/stylesheet.css?2" />
+		<link rel="icon" href="/res/favicon.ico" />
 
+		<!-- Electron compat: Insert this line above script imports  -->
+		<script>if (typeof module === 'object') {window.module = module; module = undefined;};</script>
 
+		<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+		<script src="//cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+		<script src="/js/nosleep.min.js"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
 
+		<!-- Red5Pro -->
+		<script src="//webrtc.github.io/adapter/adapter-latest.js"></script>
+		<link href="//red5.kxkm.net/webrtcexamples/lib/red5pro/red5pro-media.css" rel="stylesheet">
+		<script src="//red5.kxkm.net/webrtcexamples/lib/screenfull/screenfull.min.js"></script>
+		
+		<!-- Electron compat:  Insert this line after script imports -->
+		<script>if (window.module) module = window.module;</script>
+		
+		
+	</head>
 
-
-<!doctype html>
-<!-- Copyright © 2015 Infrared5, Inc. All rights reserved.
-
-The accompanying code comprising examples for use solely in conjunction with Red5 Pro (the "Example Code") 
-is  licensed  to  you  by  Infrared5  Inc.  in  consideration  of  your  agreement  to  the  following  
-license terms  and  conditions.  Access,  use,  modification,  or  redistribution  of  the  accompanying  
-code  constitutes your acceptance of the following license terms and conditions.
-
-Permission is hereby granted, free of charge, to you to use the Example Code and associated documentation 
-files (collectively, the "Software") without restriction, including without limitation the rights to use, 
-copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit 
-persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The Software shall be used solely in conjunction with Red5 Pro. Red5 Pro is licensed under a separate end 
-user  license  agreement  (the  "EULA"),  which  must  be  executed  with  Infrared5,  Inc.   
-An  example  of  the EULA can be found on our website at: https://account.red5pro.com/assets/LICENSE.txt.
-
-The above copyright notice and this license shall be included in all copies or portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,  INCLUDING  BUT  
-NOT  LIMITED  TO  THE  WARRANTIES  OF  MERCHANTABILITY, FITNESS  FOR  A  PARTICULAR  PURPOSE  AND  
-NONINFRINGEMENT.   IN  NO  EVENT  SHALL INFRARED5, INC. BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-WHETHER IN  AN  ACTION  OF  CONTRACT,  TORT  OR  OTHERWISE,  ARISING  FROM,  OUT  OF  OR  IN CONNECTION 
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. -->
-<html lang="eng">
-    <head>
-      <meta charset="utf-8">
-      <meta http-equiv="X-UA-Compatible" content="IE=edge">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta name="description" content="Welcome to the Red5 Pro Server Pages">
-      <link rel="stylesheet" href="//red5.kxkm.net/live/css/main.css">
-      <link rel="stylesheet" href="//red5.kxkm.net/live/css/modal.css">
-      <link href="//fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet" type="text/css">
-      <title>Subscribing to stream1</title>
-      <script src="//webrtchacks.github.io/adapter/adapter-latest.js"></script>
-      <script src="//red5.kxkm.net/live/lib/screenfull/screenfull.min.js"></script>
-      <link rel="stylesheet" href="//red5.kxkm.net/live/lib/red5pro/red5pro-media.css">
-      <link rel="stylesheet" href="//red5.kxkm.net/live/css/playback.css">
-      <link rel="stylesheet" href="//red5.kxkm.net/live/css/viewer.css">
-      <script src="//red5.kxkm.net/live/lib/smartmenus-1.1.0/libs/jquery/jquery.js"></script>
-      <style>
-        .event-container, .statistics-field {
-            display: none;
-        }
-
-        body, .content-section-story {
-            background-color: black;
-			color: white;
-        }
-
-		.header-title {
-			padding: 10px;
-		}
-      </style>
-    </head>
-    <body>	
-	
-		<div class="header-title">
-		KXKM Live: coming soon...
+	<body class="noselect">
+		
+		<div class="controls">
+			<button class='ctrlBtn' data-action="phase"	data-arg="intro" >intro</button>
+			<button class='ctrlBtn' data-action="phase"	data-arg="live"  >live</button>
+			//
+			<button class='ctrlBtn' data-action="test"  >test</button>
+			//
+			<button class='ctrlBtn' data-action="phase"	data-arg="space" >space</button>
+			<button class='ctrlBtn' data-action="phase"	data-arg="spaceSpeed" >spaceSpeed</button>
+			<button class='ctrlBtn' data-action="phase"	data-arg="off"   >off</button>
+			<button class='ctrlBtn' data-action="phase"	data-arg="hide"   >hide</button>
+			<button class='ctrlBtn' data-action="phase"	data-arg="stepdown" >stepdown</button>
+			<button class='ctrlBtn' data-action="phase"	data-arg="freak" >freak</button>
+			//
+			<button class='ctrlBtn' data-action="phase"	data-arg="names" >names</button>
+			<button class='ctrlBtn' data-action="ctrl" >ctrl</button>
+			//
+			<button class='ctrlBtn' data-action="phase"	data-arg="winner"  id="winner-btn" >winner</button>
+			<button class='ctrlBtn' data-action="phase"	data-arg="fakeshot">fakeshot</button>
+			<button class='ctrlBtn' data-action="realshot">realshot</button>
+			<button class='ctrlBtn' data-action="phase" data-arg="end">end</button>
+			// 
+			<button class='ctrlBtn' data-action="reload"	>reload</button>
+			<button class='ctrlBtn' data-action="clear"		>clear</button>
 		</div>
 
-      <div id="viewer-section">
-        <div class="content-section-story">
-          <div id="id-container" class="hidden"></div>
-          
-          <div class="subscribe-section">
-            <div class="video-container">
-              <div class="statistics-field hidden">Bitrate: N/A. 0x0.</div>
-              <div class="video-holder">
-                <video id="red5pro-subscriber"
-                      controls="controls" autoplay="autoplay" playsinline
-                      class="red5pro-subscriber red5pro-media red5pro-media-background">
-                </video>
-                <img src="//red5.kxkm.net/live/images/loading.svg" class="stream-play-button loading-icon">
-              </div>
-            </div>
-            <div id="report-container" class="reports-container hidden">
-              <div class="report-field">
-                <div id="video-report_stats" class="statistics-field"></div>
-                <div class="report-field_header">Video</div>
-                <div id="video-report" class="report"></div>
-              </div>
-              <div class="report-field">
-                <div id="audio-report_stats" class="statistics-field"></div>
-                <div class="report-field_header">Audio</div>
-                <div id="audio-report" class="report"></div>
-              </div>
-            </div>
-          </div>
-          <div class="event-container">
-            <div class="status-field status-message"></div>
-            <div class="stream-manager-info status-message hidden"></div>
-            <div class="event-log-field">
-              <div class="event-header">
-                <span>Event Log:</span>
-                <button id="clear-log-button" class="event-clear-button">clear</button>
-              </div>
-              <hr class="event-rule">
-              <div class="event-log">
-            </div>
-          </div>
-        </div>
-      </div>
-      <script src="//red5.kxkm.net/live/lib/es6/es6-array.js"></script>
-      <script src="//red5.kxkm.net/live/lib/es6/es6-bind.js"></script>
-      <script src="//red5.kxkm.net/live/lib/es6/es6-promise.min.js"></script>
-      <script src="//red5.kxkm.net/live/lib/es6/es6-fetch.js"></script>
-      <script src="//red5.kxkm.net/live/lib/es6/es6-object-assign.js"></script>
-      <script>
-        (function (window) {
-          // is_stream_manager is determined in jsp_header.hbs.
-          console.log("[Stream Manager] Determined host as Stream Manager: no.");
-          window.jsp_isStreamManager = false;
-        })(window);
-      </script>
-      <script src="//red5.kxkm.net/live/script/r5pro-ice-utils.js"></script>
-      <script>
-          // writing params to global.
-          window.targetHost = "red5.kxkm.net";
-          window.r5proApp = "live";
-          window.r5proStreamName = "stream1";
-          window.r5proBuffer = Number("0.5");
-          window.r5proVideoWidth = "100%";
-          window.r5proVideoHeight = "480";
-          window.r5proIce = window.determineIceServers('null');
-          window.r5proAutosubscribe = true;
+		<div class="connecting widget widget-connecting">
+			recherche du serveur de spectacle...
+		</div>
+		
+		<div class="namescreen widget widget-name">
+			VOTRE NOM<br />
+			<input type="text" id="namenem" placeholder="Jean Dupont - CNRS" /><button id="nameok">ok</button><br /><br />
+			<em>Merci de saisir vos prénom,<br />nom et entreprise !</em><br /><br />
+		</div>
 
-          function assignIfDefined (value, prop) {
-            if (value && value !== 'null') {
-              window[prop] = value;
-            }
-          }
-          assignIfDefined("null", 'r5proViewTech');
-          assignIfDefined("null", 'targetPort');
-          assignIfDefined("null", 'targetProtocol');
-          assignIfDefined(-1, 'r5proAudioBandwidth');
-          assignIfDefined(-1, 'r5proVideoBandwidth');
+		<div class="namescreen widget widget-welcome" id="accept-welcome">
+			Bienvenue<br /><span class="namedisplay"></span>!<br /><br />
+			Cliquez ici pour accéder<br />à la visio-conférence...
+		</div>
 
-          if (0) {
-              assignIfDefined("null", 'analytics_protocol');
-              assignIfDefined("null", 'analytics_host');
-              assignIfDefined("null", 'analytics_port');
+		<!-- EXIT -->
+		<!-- <div class="content widget widget-exit"> -->
+		<div class="widget exit">
+			<!-- &#10006 -->
+			<img class="fsimg" src="/img/fs.png" />
+		</div>
+		<!-- </div> -->
 
-              var script = document.createElement('script');
-              script.src = 'script/r5pro-analytics-plugin.js';
-              document.head.appendChild(script);
-          }
-        </script>
-      <script src="//red5.kxkm.net/live/lib/red5pro/red5pro-sdk.min.js"></script>
-      <script src="//red5.kxkm.net/live/script/r5pro-utils.js"></script>
-      <script src="//red5.kxkm.net/live/script/r5pro-sm-utils.js"></script>
-      <script src="//red5.kxkm.net/live/script/r5pro-autoplay-utils.js"></script>
-      <script src="//red5.kxkm.net/live/script/r5pro-playback-block.js"></script>
-      <script src="//red5.kxkm.net/live/script/r5pro-viewer-failover.js"></script>
-    </body>
+		<!-- EXIT -->
+		<div class="widget fs">
+			<img class="fsimg" src="/img/fs.png" />
+		</div>
+
+		<!-- INTRO -->
+		<div class="content widget widget-intro">
+			<div class='introtxt'>
+				<br />
+				<br />
+				Bonjour <span class="namedisplay"></span>,<br />
+				<br />
+				Aujourd'hui à 14H40 retrouvez <br />
+				Stéphane Bonnard,<br />
+				co-directeur artistique <br /><br />
+				<img class="intrologo" src="/img/kxkm.png" /><br />
+				<br />
+				avec le projet :<br />
+				<span class="introtitle">Une architecture du soleil</span>
+				<br />
+				<br />
+				<img class="introimg" src="/img/jauge.gif" />
+			</div>
+			
+		</div>
+
+
+		<!-- LIVE -->
+		<div class="content widget widget-live">
+			<div id="textzone"> KompleX KapharnaüM : visio-conférence </div>
+			<video id="red5pro-subscriber" class="red5pro-media red5pro-media-background" autoplay loop muted playsinline></video>
+		</div>
+
+
+		<!-- SPACE -->
+		<div class="content widget widget-space">
+			<div class="gauge-container"></div>
+			<div class="spaceoverlay"></div>
+			<img src="/img/space.gif" id="space-gif" />
+		</div>
+
+		<!-- NAMES -->
+		<div class="content widget widget-names">
+			<div class="names-container"></div>
+		</div>
+
+		<!-- CTRL -->
+		<div class="content widget widget-ctrl">
+			<img src="/img/ctrl.gif" id="ctrl-gif" />
+		</div>
+
+		<!-- WINNER -->
+		<div class="content widget widget-winner">
+			<div class="winneroverlay">
+				<span class="thewinner"></span> a décidé
+				<span class="winner2"><br>l'arrêt.</span>
+			</div>
+		</div>
+
+		<!-- FAKE SHUTDOWN -->
+		<div class="content widget widget-shutdown">
+			<div class="suhtdownoverlay">
+				<img src="/img/shutdown.gif" id="shutdown-gif" />
+			</div>
+		</div>
+		
+		<!-- QUIT -->
+		<div class="content widget widget-end">
+			<div class='introtxt'>
+				<br />
+				<br />
+				<br />
+				La visio-conférence est terminée.<br /><br />
+				 à bientôt !<br /><br /><br /><br /><br /><br /><br />
+				<img class="intrologo" src="/img/kxkm.png" />
+			</div>
+		</div>
+
+
+		<script src="//red5.kxkm.net/webrtcexamples/lib/red5pro/red5pro-sdk.min.js"></script>
+		<script src="/js/script.js?3"></script>
+	</body>
+
+	
 </html>
