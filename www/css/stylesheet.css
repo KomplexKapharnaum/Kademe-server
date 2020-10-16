@@ -23,6 +23,7 @@
     src: url('/font/Monaco.woff') format('woff');
     }
 
+
 body {
     font-family: dinbold;
     /* font-size: 80px; */
@@ -186,7 +187,7 @@ body {
     z-index: 90;
 }
 
-.fs img {
+.fsimg {
     width: 3vh;
 }
 
@@ -304,20 +305,45 @@ body {
     bottom: 0px;
     left: 0px;
     right: 0px;
-    background-color: #025A9C;
     /* display: none; */
     z-index: 300;
+    cursor: none;
 }
+
+.shutdowncolor {
+    background-color: #025A9C;
+}
+
+.shutdowncolor-mac {
+    background-color: #BFBFBF;
+}
+
+.shutdowncolor-ios {
+    background-color: #BFBFBF;
+}
+
+.shutdowncolor-win {
+    background-color: #025A9C;
+}
+
+.shutdowncolor-andro {
+    background-color: #1E2024;
+}
+
+.shutdowncolor-linux {
+    background-color: #2F0023;
+}
+
 
 #shutdown-gif
 {
     position:absolute;
-    width:546px; /*image width */
-    height:262px; /*image height */
+    width:500px; /*image width */
+    height:250px; /*image height */
     left:50%; 
     top:50%;
-    margin-left:-273px; /*image width/2 */
-    margin-top:-131px; /*image height/2 */
+    margin-left:-250px; /*image width/2 */
+    margin-top:-125px; /*image height/2 */
 }
 
 
